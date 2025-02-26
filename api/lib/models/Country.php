@@ -41,14 +41,67 @@ class Country extends DBA
         $this->dialcode = $dialcode;
     }
 
-    public function getId(): ?int
+    static public function _get(int $criteria, $value): ?Country
     {
-        return $this->id;
+        return match (true) {
+            $criteria == Criteria::ID && (int)$value > 0 => self::_toObject(parent::_getOne(self::TABLE, [parent::ID => (int)$value])),
+            $criteria == Criteria::TOKEN && !QString::_isNull($value) => self::_toObject(parent::_getOne(self::TABLE, [parent::TOKEN => trim($value)])),
+            default => null,
+        };
     }
 
-    public function setId(?int $id): void
+    static protected function _toObject(?OODBBean $bean): ?Country
     {
-        $this->id = $id;
+        if (!$bean instanceof OODBBean)
+            return null;
+
+        if (!empty($vars = $bean->export())) {
+            return new Country(
+                $vars[self::ID],
+                $vars[TOKEN],
+                $vars[NAMEFR],
+                $vars[NAMEEN],
+                $vars[ALPHA2],
+                $vars[ALPHA3],
+                $vars[DIAL],
+            );
+        }
+        return null;
+    }
+
+    /**
+     * @return array|null
+     */
+
+    static public function _list(): ?array
+    {
+        if (!empty($beans = parent::_getAll(self::TABLE, []))) {
+            foreach ($beans as $bean)
+                if (($item = self::_toObject($bean)) instanceof self)
+
+                    $action[] = $item->toArray();
+
+        }
+        return $action ?? null;
+    }
+
+    /**
+     * @param int $limit
+     * @param int $offset
+     * @return array|null
+     */
+
+
+    public function toArray(): array
+    {
+        return [
+            TOKEN => $this->token,
+            DIAL => $this->dialcode,
+            ALPHA2 => $this->alpha2,
+            ALPHA3 => $this->alpha3,
+            NAMEFR => $this->namefr,
+            NAMEEN => $this->nameen,
+        ];
     }
 
     public function getToken(): ?int
@@ -59,6 +112,84 @@ class Country extends DBA
     public function setToken(?int $token): void
     {
         $this->token = $token;
+    }
+
+    /**
+     * @return Country|null
+     */
+    public function save(): ?Country
+    {
+        try {
+            $this->validate();
+            return self::_toBean($this);
+        } catch (Exception $e) {
+            Reply::_error($e->getMessage());
+        }
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function validate(): void
+    {
+        $errors = [];
+
+        if (empty($this->namefr)) $errors[] = "namefr is required!";
+        if (empty($this->nameen)) $errors[] = "nameen is required!";
+        if (empty($this->dialcode)) $errors[] = "dialcode is required!";
+        if (empty($this->alpha2)) $errors[] = "alpha2 is required!";
+        if (empty($this->alpha3)) $errors[] = "alpha3 is required!";
+
+        if (!empty($errors)) {
+            throw new Exception(implode(" ", $errors));
+        }
+    }
+
+    static protected function _toBean(Country $country): ?Country
+    {
+
+        $bean = ($update = (int)$country->getId() > 0)
+            ? R::loadForUpdate(self::TABLE, $country->getId())
+            : R::dispense(self::TABLE);
+
+        if (!$bean instanceof OODBBean)
+            return null;
+        if (!$update) {
+            $bean->{self::TOKEN} = (int)self::shortToken(self::TABLE);
+        }
+        $bean->{NAMEFR} = QString::_set($country->getNamefr());
+        $bean->{NAMEEN} = QString::_set($country->getNameen());
+        $bean->{DIAL} = QString::_set($country->getDialcode());
+        $bean->{ALPHA2} = QString::_set($country->getAlpha2());
+        $bean->{ALPHA3} = QString::_set($country->getAlpha3());
+
+
+        if (($lastCID = (int)R::store($bean)) > 0)
+            return self::_toObject(R::load(self::TABLE, $lastCID));
+
+        return null;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    static protected function shortToken(): int
+    {
+        $table = self::TABLE;
+
+        $lastToken = R::getCell("SELECT MAX(token) FROM {$table}");
+
+        $nextToken = ($lastToken) ? intval($lastToken) + 1 : 100001;
+
+        return $nextToken;
     }
 
     public function getNamefr(): string
@@ -81,6 +212,16 @@ class Country extends DBA
         $this->nameen = $nameen;
     }
 
+    public function getDialcode(): string
+    {
+        return $this->dialcode;
+    }
+
+    public function setDialcode(string $dialcode): void
+    {
+        $this->dialcode = $dialcode;
+    }
+
     public function getAlpha2(): string
     {
         return $this->alpha2;
@@ -99,149 +240,6 @@ class Country extends DBA
     public function setAlpha3(string $alpha3): void
     {
         $this->alpha3 = $alpha3;
-    }
-
-    public function getDialcode(): string
-    {
-        return $this->dialcode;
-    }
-
-    public function setDialcode(string $dialcode): void
-    {
-        $this->dialcode = $dialcode;
-    }
-
-    /**
-     * @return void
-     * @throws Exception
-     */
-    public function validate(): void
-    {
-        $errors = [];
-
-        if (empty($this->namefr)) $errors[] = "namefr is required!";
-        if (empty($this->nameen)) $errors[] = "nameen is required!";
-        if (empty($this->dialcode)) $errors[] = "dialcode is required!";
-        if (empty($this->alpha2)) $errors[] = "alpha2 is required!";
-        if (empty($this->alpha3)) $errors[] = "alpha3 is required!";
-
-        if (!empty($errors)) {
-            throw new Exception(implode(" ", $errors));
-        }
-    }
-
-
-    /**
-     * @return Country|null
-     */
-    public function save(): ?Country
-    {
-        try {
-            $this->validate();
-            return self::_toBean($this);
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            return null;
-        }
-    }
-
-
-    public function toArray(): array
-    {
-        return [
-            TOKEN =>  $this->token,
-            DIAL =>  $this->dialcode,
-            ALPHA2 =>  $this->alpha2,
-            ALPHA3 =>  $this->alpha3,
-            NAMEFR => $this->namefr,
-            NAMEEN => $this->nameen,
-        ];
-    }
-    static public function _get(int $criteria, $value): ?Country
-    {
-        return match (true) {
-            $criteria == Criteria::ID && (int)$value > 0 => self::_toObject(parent::_getOne(self::TABLE, [parent::ID => (int)$value])),
-            $criteria == Criteria::TOKEN && !QString::_isNull($value) => self::_toObject(parent::_getOne(self::TABLE, [parent::TOKEN => trim($value)])),
-             default => null,
-        };
-    }
-
-    static protected function _toBean(Country $country): ?Country
-    {
-
-        $bean = ($update = (int)$country->getId() > 0)
-            ? R::loadForUpdate(self::TABLE, $country->getId())
-            : R::dispense(self::TABLE);
-
-        if (!$bean instanceof OODBBean)
-            return null;
-        if (!$update){
-            $bean->{self::TOKEN} = (int)self::shortToken(self::TABLE);
-        }
-        $bean->{NAMEFR} =QString::_set($country->getNamefr());
-        $bean->{NAMEEN} =QString::_set($country->getNameen());
-        $bean->{DIAL} =QString::_set($country->getDialcode());
-        $bean->{ALPHA2} =QString::_set($country->getAlpha2());
-        $bean->{ALPHA3} =QString::_set($country->getAlpha3());
-
-
-        if (($lastCID = (int)R::store($bean)) > 0)
-            return self::_toObject(R::load(self::TABLE, $lastCID));
-
-        return null;
-    }
-
-    static protected function _toObject(?OODBBean $bean): ?Country
-    {
-        if (!$bean instanceof OODBBean)
-            return null;
-
-        if (!empty($vars = $bean->export())) {
-            return new Country(
-                $vars[self::ID],
-                $vars[TOKEN],
-                $vars[NAMEFR],
-                $vars[NAMEEN],
-                $vars[ALPHA2],
-                $vars[ALPHA3],
-                $vars[DIAL],
-            );
-        }
-        return null;
-    }
-
-    static protected function shortToken(): int
-    {
-        $table = self::TABLE;
-
-        $lastToken = R::getCell("SELECT MAX(token) FROM {$table}");
-
-        $nextToken = ($lastToken) ? intval($lastToken) + 1 : 100001;
-
-        return $nextToken;
-    }
-
-  /*  static public function _list(): ?array
-    {
-        if (!empty($beans = parent::_getAll(self::TABLE, []))) {
-            foreach ($beans as $bean)
-                if (($item = self::_toObject($bean)) instanceof self)
-
-                    $action[] = $item->toArray();
-
-        }
-        return $action ?? null;
-    }*/
-    /**
-     * @param int $limit
-     * @param int $offset
-     * @return array|null
-     */
-
-     static public function _list(int $limit = 100, int $offset = 0): ?array
-    {
-        $beans = parent::_getAll(self::TABLE, [], $limit, $offset);
-        return array_map(fn($bean) => self::_toObject($bean)?->toArray(), $beans);
     }
 
 

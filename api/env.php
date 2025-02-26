@@ -16,6 +16,8 @@ const NAMEEN = 'nameen';
 const DIAL = 'dialcode';
 const ALPHA2 = 'alpha2';
 const ALPHA3 = 'alpha3';
+const COUNTRY = 'country';
+const CITY = 'city';
 
 const LABEL = 'label';
 const ACTION = 'action';

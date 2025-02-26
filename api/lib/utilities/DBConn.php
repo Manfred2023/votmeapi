@@ -11,20 +11,20 @@
 class DBConn
 {
 
-        /**
-         * MySQL DB Connector
-         * @return void
-         */
-      static public function _conn(): void
-      {
-         try {
+    /**
+     * MySQL DB Connector
+     * @return void
+     */
+    static public function _conn(): void
+    {
+        try {
             R::setup('mysql:host=localhost:3306;dbname=nege5774_votme',
-               'nege5774_manfred', 'Manfred500.');
+                'nege5774_manfred', 'Manfred500.');
 
-           } catch (Exception $exception) {
-               die($exception->getMessage());
-           }
-      }
+        } catch (Exception $exception) {
+            die($exception->getMessage());
+        }
+    }
 
 
 }
