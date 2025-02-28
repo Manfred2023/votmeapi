@@ -9,26 +9,27 @@
  */
 
 class Criteria
+{
+    const ID = 0;
+    const TOKEN = 1;
+    const ALPHA3 = 2;
+    const MOBILE = 2;
+
+    /**
+     * @param array|null $fields
+     * @param array|null $request
+     * @return void
+     * @throws Exception
+     */
+    static public function _formRequiredCheck(?array $fields, ?array $request): void
     {
-        const ID = 0;
-        const TOKEN = 1;
-        const ALPHA3 = 2;
+        if (empty($request))
+            throw new Exception("Empty request not accepted here!");
 
-        /**
-         * @param array|null $fields
-         * @param array|null $request
-         * @return void
-         * @throws Exception
-         */
-        static public function _formRequiredCheck(?array $fields, ?array $request): void
-        {
-            if (empty($request))
-                throw new Exception("Empty request not accepted here!");
-
-            foreach ($fields as $field)
-                if (!array_key_exists($field, $request))
-                    throw new Exception("{$field} missing in your request!");
-
-        }
+        foreach ($fields as $field)
+            if (!array_key_exists($field, $request))
+                throw new Exception("{$field} missing in your request!");
 
     }
+
+}

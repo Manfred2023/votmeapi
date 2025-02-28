@@ -7,7 +7,7 @@
  *  Copyright (c) 2025. All rights reserved.
  *  Last modified 1/7/25, 10:15 AM
  */
-
+require_once dirname(__DIR__, 2) . '/lib/utilities/Constant.php';
 function validateBearerToken(): bool
 {
     // Vérification de l'existence du header Authorization
@@ -35,21 +35,21 @@ function validateToken(string $token): bool
 {
     try {
         // Créer une instance de Jwt avec la même clé que celle utilisée pour l'encodage
-        $jwt = new Jwt('c2f07e2c-5a51-4368-970d-26fdd192eae0', 'BuildTrack');
+        $jwt = new Jwt(ConstantApp::APP_IDENTIFIER, ConstantApp::APP_KEY);
 
         // Décoder le token
         $decoded = $jwt->decode($token);
 
         // Si decode() retourne null, le token est invalide
         if ($decoded === null) {
-            Reply::_error("Token validation failed: invalid token",code: 401);
+            Reply::_error("Token validation failed: invalid token", code: 401);
             error_log("Token validation failed: invalid token");
             return false;
         }
 
         // Vérifications supplémentaires si nécessaire
-        if ($decoded['app'] !== 'BuildTrack') {
-            Reply::_error("Token validation failed: invalid app",code: 401);
+        if ($decoded['app'] !== 'VotMe') {
+            Reply::_error("Token validation failed: invalid app", code: 401);
             error_log("Token validation failed: invalid app");
             return false;
         }

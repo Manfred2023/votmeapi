@@ -9,6 +9,9 @@
  */
 
 require dirname(__DIR__, 2) . '/conf.php';
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 try {
     Reply::_success(City::_list());
 } catch (Exception $e) {

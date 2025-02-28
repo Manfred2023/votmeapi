@@ -20,23 +20,18 @@ class Jwt
     }
 
     // Encode base64url
-    private function base64URLEncode(string $text): string
+
+    public function encode(string $clientId, int $validityInSeconds = 86400): string
     {
-        return rtrim(strtr(base64_encode($text), '+/', '-_'), '=');
+        $header = $this->createHeader();
+        $payload = $this->createPayload($clientId, $validityInSeconds);
+        $signature = $this->createSignature($header, $payload);
+
+        return "{$header}.{$payload}.{$signature}";
     }
 
     // Decode base64url
-    private function base64URLDecode(string $text): string
-    {
-        $base64 = strtr($text, '-_', '+/');
-        $padding = strlen($base64) % 4;
-        if ($padding) {
-            $base64 .= str_repeat('=', 4 - $padding);
-        }
-        return base64_decode($base64);
-    }
 
-    // Crée le header du JWT
     private function createHeader(): string
     {
         $header = [
@@ -48,13 +43,20 @@ class Jwt
         return $this->base64URLEncode($jsonHeader);
     }
 
+    // Crée le header du JWT
+
+    private function base64URLEncode(string $text): string
+    {
+        return rtrim(strtr(base64_encode($text), '+/', '-_'), '=');
+    }
+
     // Crée le payload du JWT
+
     private function createPayload(string $clientId, int $validityInSeconds): string
     {
         $payload = [
-            "app" => "BuildTrack",
+            "app" => "VotMe",
             "cli" => $this->app,
-            //"ssi" => $clientId, // Le clientId est maintenant correctement inclus
             "iat" => time(), // Issued At (le temps actuel)
             "exp" => time() + $validityInSeconds // Expiration Time
         ];
@@ -72,14 +74,6 @@ class Jwt
     }
 
     // Génère le JWT complet
-    public function encode(string $clientId, int $validityInSeconds = 86400): string
-    {
-        $header = $this->createHeader();
-        $payload = $this->createPayload($clientId, $validityInSeconds);
-        $signature = $this->createSignature($header, $payload);
-
-        return "{$header}.{$payload}.{$signature}";
-    }
 
     /**
      * Décode et vérifie un JWT
@@ -119,17 +113,21 @@ class Jwt
                 return null;
             }
 
-            // Vérifie l'application
-            if (!isset($decodedPayload['app']) || $decodedPayload['app'] !== "BuildTrack") {
-                error_log("Invalid application");
-                return null;
-            }
-
             return $decodedPayload;
 
         } catch (Exception $e) {
             error_log("JWT decode error: " . $e->getMessage());
             return null;
         }
+    }
+
+    private function base64URLDecode(string $text): string
+    {
+        $base64 = strtr($text, '-_', '+/');
+        $padding = strlen($base64) % 4;
+        if ($padding) {
+            $base64 .= str_repeat('=', 4 - $padding);
+        }
+        return base64_decode($base64);
     }
 }

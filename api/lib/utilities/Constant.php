@@ -13,10 +13,6 @@ class ConstantApp
 
     public const APP_KEY = 24121901231224;
     public const APP_VERSION = "1.0.0";
+    public const APP_IDENTIFIER = "b6fbe38d-af7d-426a-b50a-cb48cfdb2b1d";
 
-    public const startEntryMaterial = "start_entry_material";
-    public const validateEntry = "validate_entry";
-    public const cancelEntry = "cancel_entry";
-    public const deleteEntry = "delete_entry";
-    public const userNotFound = "user_not_found";
 }

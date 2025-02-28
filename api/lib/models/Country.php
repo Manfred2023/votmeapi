@@ -117,7 +117,7 @@ class Country extends DBA
     /**
      * @return Country|null
      */
-    public function save(): ?Country
+    public function save()
     {
         try {
             $this->validate();

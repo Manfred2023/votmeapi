@@ -10,15 +10,31 @@
 
 class Helper
 {
-    static public function isEmailFormatValid(String $email)
+    static public function isEmailFormatValid(string $email)
     {
         return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
 
-    static public function isCameroonianPhoneNumber($phoneNumber) {
+    static public function isCameroonianPhoneNumber($phoneNumber)
+    {
         $pattern = "/^6[5789][0-9]{7}$/";
         return preg_match($pattern, $phoneNumber) === 1;
     }
+
+    static public function isValidCode($code)
+    {
+
+        if (!preg_match('/^\d{6}$/', $code)) {
+            return false;
+        }
+
+        if (preg_match('/^(.)\1{5}$/', $code)) {
+            return false;
+        }
+
+        return true;
+    }
+
 
     static public function generateApkCode($appName, $env): string
     {
@@ -33,7 +49,9 @@ class Helper
         // Code final
         return $app . $environment . $date . $random;
     }
-    static public function isValidUuid($uuid) {
+
+    static public function isValidUuid($uuid)
+    {
         // Regex pour matcher le format UUID v4
         $uuidRegex = '/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i';
 
@@ -41,7 +59,8 @@ class Helper
         return preg_match($uuidRegex, $uuid) === 1;
     }
 
-    static public function  CreateReference($input) {
+    static public function CreateReference($input)
+    {
 
         $transformedValue = preg_replace("/[\s']/", '_', $input);
 
@@ -49,7 +68,6 @@ class Helper
 
         return substr($transformedValue, 0, 50);
     }
-
 
 
 }

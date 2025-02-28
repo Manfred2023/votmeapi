@@ -8,6 +8,7 @@
  *  Last modified 1/7/25, 10:15 AM
  */
 
+
 class DBConn
 {
 
@@ -25,6 +26,17 @@ class DBConn
             die($exception->getMessage());
         }
     }
+    /*  static public function _conn(): void
+      {
+          try {
+
+              R::setup('mysql:host=localhost:3306;dbname=' . getenv('DB_NAME'),
+                  getenv('DB_USERNAME'), getenv('DB_PASSWORD'));
+
+          } catch (Exception $exception) {
+              die($exception->getMessage());
+          }
+      }*/
 
 
 }

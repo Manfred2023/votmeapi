@@ -21,11 +21,11 @@ class Contact extends DBA
     private string $gender;
     private ?string $firstname;
     private string $lastname;
-    private string $email;
+    private ?string $email;
     private ?string $location;
     private City $city;
     private string $mobile;
-    private string $lang;
+    private ?string $lang;
 
     /**
      * @param int|null $id
@@ -63,17 +63,47 @@ class Contact extends DBA
         return $contacts ?? null;
     }
 
+    static protected function _toObject(?OODBBean $bean): ?Contact
+    {
+        if (!$bean instanceof OODBBean || $bean->isEmpty())
+            return null;
+
+        $vars = $bean->export();
+
+        return new Contact(
+            $vars[self::ID],
+            $vars[self::TOKEN],
+            $vars[GNDR],
+            $vars[FRSTNM],
+            $vars[LSTNM],
+            $vars[EMAIL],
+            $vars[LCTN],
+            City::_get(Criteria::ID, (int)$vars[CITY]),
+            $vars[MBLE],
+            $vars[LANG],
+        );
+    }
+
+    static public function _get(int $criteria, $value): ?Contact
+    {
+        return match (true) {
+            $criteria == Criteria::ID && (int)$value > 0 => self::_toObject(parent::_getOne(self::TABLE, [parent::ID => (int)$value])),
+            $criteria == Criteria::TOKEN && !QString::_isNull($value) => self::_toObject(parent::_getOne(self::TABLE, [parent::TOKEN => trim($value)])),
+            $criteria == Criteria::MOBILE && !QString::_isNull($value) => self::_toObject(parent::_getOne(self::TABLE, [Criteria::MOBILE => trim($value)])),
+            default => null,
+        };
+    }
+
     public function toArray(): ?array
     {
         return [
             TOKEN => ($this->token),
-            FSTNAME => QString::_get($this->firstname),
-            LSTNAME => QString::_get($this->lastname),
-            GENDER => ($this->gender),
-            MOBILE => (int)($this->mobile),
-            /// MOBILE => QString::_get($this->mobile),
+            FRSTNM => QString::_get($this->firstname),
+            LSTNM => QString::_get($this->lastname),
+            GNDR => ($this->gender),
+            MBLE => ($this->mobile),
             EMAIL => QString::_get($this->email),
-            LCTION => QString::_get($this->location),
+            LCTN => QString::_get($this->location),
             LANG => QString::_get($this->lang),
             CITY => $this->city instanceof City ? $this->city->toArray() : null,
         ];
@@ -156,14 +186,14 @@ class Contact extends DBA
         if (!$update) {
             $bean->{self::TOKEN} = (int)self::shortToken(self::TABLE);
         }
-        $bean->{self::FSTNAME} = QString::_set(QString::_latin($contact->getFirstname()));
-        $bean->{self::LSTNAME} = QString::_set(QString::_latin($contact->getLastname()));
-        $bean->{self::MOBILE} = (int)($contact->getMobile());
-        $bean->{self::GENDER} = $contact->getGender();
-        $bean->{self::CITY} = (int)$contact->getCity()->getId();
-        $bean->{self::LCTION} = QString::_set(QString::_latin($contact->getLocation()));
-        $bean->{self::EMAIL} = QString::_set($contact->getEmail());
-        $bean->{self::LANG} = QString::_set($contact->getLang());
+        $bean->{FRSTNM} = QString::_set(QString::_latin($contact->getFirstname()));
+        $bean->{LSTNM} = QString::_set(QString::_latin($contact->getLastname()));
+        $bean->{MBLE} = (int)($contact->getMobile());
+        $bean->{GNDR} = $contact->getGender();
+        $bean->{CITY} = (int)$contact->getCity()->getId();
+        $bean->{LCTN} = QString::_set(QString::_latin($contact->getLocation()));
+        $bean->{EMAIL} = QString::_set($contact->getEmail());
+        $bean->{LANG} = QString::_set($contact->getLang());
 
 
         if (($lastID = (int)R::store($bean)) > 0)
@@ -274,43 +304,11 @@ class Contact extends DBA
         $this->lang = $lang;
     }
 
-    static protected function _toObject(?OODBBean $bean): ?Contact
-    {
-        if (!$bean instanceof OODBBean || $bean->isEmpty())
-            return null;
-
-        $vars = $bean->export();
-
-        return new Contact(
-            $vars[self::ID],
-            $vars[self::TOKEN],
-            $vars[self::GENDER],
-            $vars[self::FSTNAME],
-            $vars[self::LSTNAME],
-            $vars[self::EMAIL],
-            $vars[self::LCTION],
-            City::_get(Criteria::ID, (int)$vars[self::CITY]),
-            $vars[self::MOBILE],
-            $vars[self::LANG],
-        );
-    }
-
-    static public function _get(int $criteria, $value): ?Contact
-    {
-        return match (true) {
-            $criteria == Criteria::ID && (int)$value > 0 => self::_toObject(parent::_getOne(self::TABLE, [parent::ID => (int)$value])),
-            $criteria == Criteria::TOKEN && !QString::_isNull($value) => self::_toObject(parent::_getOne(self::TABLE, [parent::TOKEN => trim($value)])),
-            $criteria == Criteria::MOBILE && !QString::_isNull($value) => self::_toObject(parent::_getOne(self::TABLE, [parent::MOBILE => trim($value)])),
-            default => null,
-        };
-    }
-
     public function delete(): bool
     {
 
         if ($this->isGood()) {
             parent::_toTrash(self::TABLE, $this->id);
-            parent::_toTrash(USER, $this->id);
             return true;
         }
         return false;
