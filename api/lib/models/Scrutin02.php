@@ -8,6 +8,5 @@ class Scrutin02 extends DBA
     private string $mobile;
     private ?string $email;
     private ?DateTime $created;
-    private ?Competition $competition;
-    private ?Candidate $candidate;
+    private Compet_Cat_Can $compet_cat_can;
 }

@@ -8,7 +8,9 @@ class Candidate extends DBA
     private string $photo;
     private string $description;
     private ?string $slogan;
+    private bool $confirmed;
     private Contact $contact;
     private Competition $competition;
+    private User $createdby;
 
 }

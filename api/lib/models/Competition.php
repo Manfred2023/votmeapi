@@ -14,6 +14,7 @@ class Competition extends DBA
     private DateTime $ended;
     private Structure $structure;
     private User $promoter;
+    private Status $status;
 
     /**
      * @param int|null $id

@@ -104,6 +104,32 @@ class DBInit
         FOREIGN KEY (structure) REFERENCES structure(id) ON DELETE CASCADE, 
         FOREIGN KEY (promoter) REFERENCES user(id) ON DELETE CASCADE
     ); 
+ ",
+        'category' => "
+        CREATE TABLE IF NOT EXISTS category (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        token VARCHAR(100) NOT NULL UNIQUE,   
+        label VARCHAR(255) NOT NULL,
+        description VARCHAR(255) NOT NULL,
+        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+    ); 
+ ",
+        'candidate' => "
+        CREATE TABLE IF NOT EXISTS candidate (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        token VARCHAR(100) NOT NULL UNIQUE,   
+        photo VARCHAR(255) NOT NULL,
+        description VARCHAR(255) NOT NULL,
+        slogan VARCHAR(255),
+        confirmed BOOLEAN DEFAULT true,
+        contact INT NOT NULL, 
+        competition INT NOT NULL,
+        createdby INT NOT NULL,
+        FOREIGN KEY (contact) REFERENCES contact(id) ON DELETE CASCADE,
+        FOREIGN KEY (competition) REFERENCES competition(id) ON DELETE CASCADE,
+        FOREIGN KEY (createdby) REFERENCES user(id) ON DELETE CASCADE,
+        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+    ); 
  "
 
     ];
