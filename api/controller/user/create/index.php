@@ -37,6 +37,10 @@ try {
         $userCheck = User::_get(Criteria::TOKEN, $data[CRTDBY]);
         if (!$userCheck instanceof User) {
             Reply::_error("User_not_found", code: 404);
+        } else {
+            if ($userCheck->getProfile()->getLabel() == "associate") {
+                Reply::_error('you_are_not_authorized_to_take_this_action');
+            }
         }
     } else {
         $userCheck = null;
@@ -55,7 +59,7 @@ try {
         exit();
     }
 
-    $user = new User(null, $data[TOKEN], $data[MBLE], $data[CODE], false, $contact, $userCheck, $profile,);
+    $user = new User(null, $data[TOKEN], $data[MBLE], $data[CODE], false, $contact, $userCheck, $profile, null);
 
 
     if ($user->getToken() != null) {

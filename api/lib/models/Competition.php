@@ -26,9 +26,10 @@ class Competition extends DBA
      * @param DateTime $ended
      * @param Structure $structure
      * @param User $promoter
+     * @param Status $status
      */
     public function
-    __construct(?int $id, ?int $token, string $theme, ?string $logo, bool $free, DateTime $started, DateTime $ended, Structure $structure, User $promoter)
+    __construct(?int $id, ?int $token, string $theme, ?string $logo, bool $free, DateTime $started, DateTime $ended, Structure $structure, User $promoter, Status $status)
     {
         $this->id = $id;
         $this->token = $token;
@@ -39,6 +40,7 @@ class Competition extends DBA
         $this->ended = $ended;
         $this->structure = $structure;
         $this->promoter = $promoter;
+        $this->status = $status;
     }
 
     static public function _list(): ?array
@@ -63,12 +65,12 @@ class Competition extends DBA
             $vars[self::TOKEN],
             $vars[THEME],
             $vars[LOGO],
-            $vars[GRATUIT],
+            $vars[FREE],
             $vars[STARTED],
             $vars[ENDED],
-            Structure::_get(Criteria::ID, (int)$vars[S]),
-            $vars[MBLE],
-            $vars[LANG],
+            Structure::_get(Criteria::ID, (int)$vars[STRCTR]),
+            User::_get(Criteria::ID, (int)$vars[PROMOTR]),
+            Status::_get(Criteria::ID, (int)$vars[STATUS]),
         );
     }
 
@@ -86,28 +88,25 @@ class Competition extends DBA
     {
         return [
             TOKEN => ($this->token),
-            FRSTNM => QString::_get($this->firstname),
-            LSTNM => QString::_get($this->lastname),
-            GNDR => ($this->gender),
-            MBLE => ($this->mobile),
-            EMAIL => QString::_get($this->email),
-            LCTN => QString::_get($this->location),
-            LANG => QString::_get($this->lang),
-            CITY => $this->city instanceof City ? $this->city->toArray() : null,
+            THEME => QString::_get($this->theme),
+            LOGO => QString::_get($this->logo),
+            FREE => ($this->free),
+            STARTED => ($this->started),
+            ENDED => $this->ended,
+            STRCTR => $this->structure instanceof Structure ? $this->structure->toArray() : null,
+            PROMOTR => $this->promoter instanceof User ? $this->promoter->toArray() : null,
+            STATUS => $this->status instanceof Status ? $this->status->toArray() : null,
         ];
     }
 
-    static protected function _toBean(?Competition $contact): ?Competition
+    static protected function _toBean(?Competition $competition): ?Competition
     {
-        if (!$contact instanceof Contact)
-            return null;
-
-        if (!$contact->getCity() instanceof City)
+        if (!$competition->getPromoter() instanceof User)
             return null;
 
 
-        $bean = ($update = (int)$contact->getId() > 0)
-            ? R::loadForUpdate(self::TABLE, $contact->getId())
+        $bean = ($update = (int)$competition->getId() > 0)
+            ? R::loadForUpdate(self::TABLE, $competition->getId())
             : R::dispense(self::TABLE);
 
 
@@ -117,20 +116,30 @@ class Competition extends DBA
         if (!$update) {
             $bean->{self::TOKEN} = (int)self::shortToken(self::TABLE);
         }
-        $bean->{FRSTNM} = QString::_set(QString::_latin($contact->getFirstname()));
-        $bean->{LSTNM} = QString::_set(QString::_latin($contact->getLastname()));
-        $bean->{MBLE} = (int)($contact->getMobile());
-        $bean->{GNDR} = $contact->getGender();
-        $bean->{CITY} = (int)$contact->getCity()->getId();
-        $bean->{LCTN} = QString::_set(QString::_latin($contact->getLocation()));
-        $bean->{EMAIL} = QString::_set($contact->getEmail());
-        $bean->{LANG} = QString::_set($contact->getLang());
+        $bean->{THEME} = QString::_set(QString::_latin($competition->getTheme()));
+        $bean->{LOGO} = QString::_set(QString::_latin($competition->getLogo()));
+        $bean->{FREE} = (int)($competition->isFree());
+        $bean->{STARTED} = $competition->getStarted();
+        $bean->{ENDED} = (int)$competition->getEnded();
+        $bean->{STRCTR} = QString::_set(QString::_latin($competition->getStructure()->getId()));
+        $bean->{PROMOTR} = QString::_set($competition->getPromoter()->getId());
+        $bean->{STATUS} = QString::_set($competition->getStatus()->getId());
 
 
         if (($lastID = (int)R::store($bean)) > 0)
             return self::_toObject(R::load(self::TABLE, $lastID));
 
         return null;
+    }
+
+    public function getPromoter(): User
+    {
+        return $this->promoter;
+    }
+
+    public function setPromoter(User $promoter): void
+    {
+        $this->promoter = $promoter;
     }
 
     public function getId(): ?int
@@ -143,14 +152,15 @@ class Competition extends DBA
         $this->id = $id;
     }
 
-    public function getToken(): ?int
+    static protected function shortToken(): int
     {
-        return $this->token;
-    }
+        $table = self::TABLE;
 
-    public function setToken(?int $token): void
-    {
-        $this->token = $token;
+        $lastToken = R::getCell("SELECT MAX(token) FROM {$table}");
+
+        $nextToken = ($lastToken) ? intval($lastToken) + 1 : 100001;
+
+        return $nextToken;
     }
 
     public function getTheme(): string
@@ -213,14 +223,24 @@ class Competition extends DBA
         $this->structure = $structure;
     }
 
-    public function getPromoter(): User
+    public function getStatus(): Status
     {
-        return $this->promoter;
+        return $this->status;
     }
 
-    public function setPromoter(User $promoter): void
+    public function setStatus(Status $status): void
     {
-        $this->promoter = $promoter;
+        $this->status = $status;
+    }
+
+    public function getToken(): ?int
+    {
+        return $this->token;
+    }
+
+    public function setToken(?int $token): void
+    {
+        $this->token = $token;
     }
 
 }

@@ -70,6 +70,7 @@ class DBInit
         contact INT NOT NULL, 
         createdby INT NULL,
         profile INT NOT NULL,
+        lastlogin VARCHAR(50) NULL,
         created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
         FOREIGN KEY (contact) REFERENCES contact(id) ON DELETE CASCADE,
         FOREIGN KEY (createdby) REFERENCES user(id) ON DELETE SET NULL,
@@ -82,6 +83,7 @@ class DBInit
         token VARCHAR(100) NOT NULL UNIQUE,   
         name VARCHAR(255) NOT NULL,
         mobile VARCHAR(255) NOT NULL UNIQUE,
+        photo VARCHAR(255) NULL,
         city INT NOT NULL, 
         manager INT NOT NULL,  
         created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
@@ -100,9 +102,11 @@ class DBInit
         ended DATETIME NOT NULL, 
         structure INT NOT NULL,
         promoter INT NOT NULL,
+        status INT NOT NULL,
         created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
         FOREIGN KEY (structure) REFERENCES structure(id) ON DELETE CASCADE, 
-        FOREIGN KEY (promoter) REFERENCES user(id) ON DELETE CASCADE
+        FOREIGN KEY (promoter) REFERENCES user(id) ON DELETE CASCADE,
+        FOREIGN KEY (status) REFERENCES status(id) ON DELETE CASCADE
     ); 
  ",
         'category' => "
@@ -130,8 +134,36 @@ class DBInit
         FOREIGN KEY (createdby) REFERENCES user(id) ON DELETE CASCADE,
         created TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
     ); 
- "
+ ",
+        'family' => "
+        CREATE TABLE IF NOT EXISTS family (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        token VARCHAR(100) NOT NULL UNIQUE,   
+        family VARCHAR(255) NOT NULL UNIQUE,
+        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+    ); 
+ ",
+        'status' => "
+        CREATE TABLE IF NOT EXISTS status (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        token VARCHAR(100) NOT NULL UNIQUE,   
+        position INT NOT NULL UNIQUE, 
+        label VARCHAR(255) NOT NULL UNIQUE,
+        reference VARCHAR(255) NOT NULL UNIQUE,
+        description VARCHAR(255) NOT NULL UNIQUE,
+        family INT NOT NULL, 
+        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (family) REFERENCES family(id) ON DELETE CASCADE
+        
+    ); 
+ ",
+        'update' => "
+        ALTER TABLE competition
+ADD COLUMN status INT NOT NULL;
 
+ALTER TABLE competition
+ADD CONSTRAINT fk_status FOREIGN KEY (status) REFERENCES status(id) ON DELETE CASCADE;
+"
     ];
 
 

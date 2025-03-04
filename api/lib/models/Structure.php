@@ -9,6 +9,7 @@ class Structure extends DBA
     private ?int $token;
     private string $name;
     private string $mobile;
+    private ?string $photo;
     private City $city;
     private ?Contact $manager;
 
@@ -20,12 +21,13 @@ class Structure extends DBA
      * @param City $city
      * @param Contact|null $manager
      */
-    public function __construct(?int $id, ?int $token, string $name, string $mobile, City $city, ?Contact $manager)
+    public function __construct(?int $id, ?int $token, string $name, string $mobile, ?string $photo, City $city, ?Contact $manager)
     {
         $this->id = $id;
         $this->token = $token;
         $this->name = $name;
         $this->mobile = $mobile;
+        $this->photo = $photo;
         $this->city = $city;
         $this->manager = $manager;
     }
@@ -52,6 +54,7 @@ class Structure extends DBA
             $vars[self::TOKEN],
             $vars[NAME],
             $vars[MBLE],
+            $vars[PHOTO],
             City::_get(Criteria::ID, $vars[CITY]),
             Contact::_get(Criteria::ID, $vars[MANAGR]),
         );
@@ -75,6 +78,7 @@ class Structure extends DBA
             MBLE => ($this->mobile),
             MANAGR => $this->manager instanceof Contact ? $this->manager->toArray() : null,
             CITY => $this->city instanceof City ? $this->city->toArray() : null,
+            PHOTO => ($this->photo),
         ];
     }
 
@@ -114,6 +118,7 @@ class Structure extends DBA
         $bean->{MBLE} = QString::_set(QString::_latin($structure->getMobile()));
         $bean->{CITY} = (int)$structure->getCity()->getId();
         $bean->{MANAGR} = QString::_set(QString::_latin($structure->getManager()->getId()));
+        $bean->{PHOTO} = QString::_set(QString::_latin($structure->getPhoto()));
 
 
         if (($lastID = (int)R::store($bean)) > 0)
@@ -182,6 +187,16 @@ class Structure extends DBA
     public function setMobile(string $mobile): void
     {
         $this->mobile = $mobile;
+    }
+
+    public function getPhoto(): string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(string $photo): void
+    {
+        $this->photo = $photo;
     }
 
     public function getToken(): ?int

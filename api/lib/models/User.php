@@ -13,6 +13,7 @@ class User extends DBA
     private Contact $contact;
     private ?User $createdby;
     private Profile $profile;
+    private ?string $lastlogin;
 
     /**
      * @param int|null $id
@@ -24,7 +25,7 @@ class User extends DBA
      * @param User|null $createdby
      * @param Profile $profile
      */
-    public function __construct(?int $id, ?int $token, int $mobile, string $code, bool $blocked, Contact $contact, ?User $createdby, Profile $profile)
+    public function __construct(?int $id, ?int $token, int $mobile, string $code, bool $blocked, Contact $contact, ?User $createdby, Profile $profile, ?string $lastlogin)
     {
         $this->id = $id;
         $this->token = $token;
@@ -34,6 +35,7 @@ class User extends DBA
         $this->contact = $contact;
         $this->createdby = $createdby;
         $this->profile = $profile;
+        $this->lastlogin = $lastlogin;
     }
 
     static public function _list(): ?array
@@ -61,6 +63,7 @@ class User extends DBA
                 Contact::_get(Criteria::ID, (int)$vars[CNTCT]),
                 User::_get(Criteria::ID, (int)$vars[CRTDBY]),
                 Profile::_get(Criteria::ID, (int)$vars[PRFLE]),
+                $vars[LSTLGN]
             );
         return null;
     }
@@ -84,6 +87,7 @@ class User extends DBA
             CNTCT => ($this->contact instanceof Contact) ? $this->contact->toArray() : null,
             PRFLE => ($this->profile instanceof Profile) ? $this->profile->toArray() : null,
             BLCKD => $this->isBlocked(),
+            LSTLGN => $this->lastlogin,
             CRTDBY => ($this->createdby instanceof User)
                 ? $this->createdby->getContact()->getFirstname() . ' ' . $this->createdby->getContact()->getLastname()
                 : null,
@@ -152,6 +156,7 @@ class User extends DBA
         $bean->{CNTCT} = (int)$user->getContact()->getId();
         $bean->{CRTDBY} = $user->getCreatedby()?->getId();
         $bean->{PRFLE} = $user->getProfile()->getId();
+        $bean->{LSTLGN} = $user->getLastlogin();
 
 
         if (($lastID = (int)R::store($bean)) > 0)
@@ -219,6 +224,16 @@ class User extends DBA
     public function setCreatedby(?User $createdby): void
     {
         $this->createdby = $createdby;
+    }
+
+    public function getLastlogin(): ?string
+    {
+        return $this->lastlogin;
+    }
+
+    public function setLastlogin(?string $lastlogin): void
+    {
+        $this->lastlogin = $lastlogin;
     }
 
     public function getToken(): ?int

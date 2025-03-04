@@ -25,7 +25,7 @@ try {
     $rawData = file_get_contents('php://input');
     $data = json_decode($rawData, true);
 
-    Criteria::_formRequiredCheck([TOKEN, NAME, MBLE, CITY, MANAGR], $data);
+    Criteria::_formRequiredCheck([TOKEN, NAME, MBLE, CITY, MANAGR, PHOTO], $data);
 
     if (!Helper::isCameroonianPhoneNumber($data[MBLE]))
         Reply::_error("mobile_is_not_good");
@@ -41,7 +41,7 @@ try {
         exit();
     }
 
-    $rename = new Structure(null, $data[TOKEN], $data[NAME], $data[MBLE], $city, $manager);
+    $rename = new Structure(null, $data[TOKEN], $data[NAME], $data[MBLE], $data[PHOTO], $city, $manager);
 
 
     if ($rename->getToken() != null) {
@@ -54,6 +54,7 @@ try {
         $result->setName($rename->getName());
         $result->setMobile($rename->getMobile());
         $result->setCity($rename->getCity());
+        $result->setPhoto($rename->getPhoto());
         $result->save();
 
         Reply::_success($result->toArray());
