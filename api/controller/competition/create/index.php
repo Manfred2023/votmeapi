@@ -30,8 +30,9 @@ try {
     $data = json_decode($rawData, true);
 
     Criteria::_formRequiredCheck([TOKEN, THEME, LOGO, FREE, STARTED, ENDED, STRCTR, PROMOTR], $data);
-    $started = new DateTime($data[STARTED], new DateTimeZone('Africa/Douala'));
-    $ended = new DateTime($data[ENDED], new DateTimeZone('Africa/Douala'));
+    $started = new DateTime($data[STARTED]);
+    //$formattedDate = $started->format('Y-m-d H:i:s');
+    $ended = new DateTime($data[ENDED]);
 
 
     $structure = Structure::_get(Criteria::TOKEN, $data[STRCTR]);
@@ -42,28 +43,26 @@ try {
     //if($user->getProfile()->getLabel() == 'admin')
     $status = Status::_get(Criteria::TOKEN, 100001);
 
-    $contact = new Competition(null, $data[TOKEN], $data[THEME], $data[LOGO], $data[FREE], $started, $ended, $structure, $user, $status);
-    Reply::_success($contact->toArray());
+    $competition = new Competition(null, $data[TOKEN], $data[THEME], $data[LOGO], $data[FREE], $started, $ended, $structure, $user, $status);
 
-    /*  if ($contact->getToken() != null) {
-          $result = Contact::_get(Criteria::TOKEN, $contact->getToken());
-          if (!$result instanceof Contact) Reply::_error('Contact_not_found');
-          $result->setFirstname($contact->getFirstname());
-          $result->setLastname($contact->getLastname());
-          $result->setGender($contact->getGender());
-          $result->setEmail($contact->getEmail());
-          $result->setCity($contact->getCity());
-          $result->setMobile($contact->getMobile());
-          $result->setLang($contact->getLang());
-          $resultt = $result->save();
-          if ($resultt instanceof Contact)
-              Reply::_success($resultt->toArray());
 
-      } else {
-          $result = $contact->save();
-          if ($result instanceof Contact)
-              Reply::_success($result->toArray());
-      }*/
+    if ($competition->getToken() != null) {
+        $result = Competition::_get(Criteria::TOKEN, $competition->getToken());
+        if (!$result instanceof Competition) Reply::_error('competition_not_found');
+        $result->setTheme($competition->getTheme());
+        $result->setLogo($competition->getLogo());
+        $result->setStarted($competition->getStarted());
+        $result->setEnded($competition->getEnded());
+        $result->setStructure($competition->getStructure());
+        $resultt = $result->save();
+        if ($resultt instanceof Competition)
+            Reply::_success($resultt->toArray());
+
+    } else {
+        $competitions = $competition->save();
+        if ($competitions instanceof Competition)
+            Reply::_success($competitions->toArray());
+    }
 } catch (Exception $exception) {
     Reply::_exception($exception);
 }

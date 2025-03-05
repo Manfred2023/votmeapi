@@ -46,8 +46,13 @@ const FAMILY = 'family';
 const REFERENCE = 'reference';
 const POSITION = 'position';
 const STRCTR = 'structure';
-const PROMOTR = 'promoteur';
+const PROMOTR = 'promoter';
 const STATUS = 'status';
+const SLOGAN = 'slogan';
+const CONFIRMED = 'confirmed';
+const COMPTTN = 'competition';
+
+const CTGRY = 'category';
 
 const LABEL = 'label';
 const ACTION = 'action';

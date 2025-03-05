@@ -52,7 +52,7 @@ class Jwt
 
     // Crée le payload du JWT
 
-    private function createPayload(string $clientId, int $validityInSeconds): string
+    private function createPayload(int $validityInSeconds): string
     {
         $payload = [
             "app" => "VotMe",

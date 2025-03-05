@@ -17,6 +17,7 @@ class Competition extends DBA
     private Status $status;
 
     /**
+     * /**
      * @param int|null $id
      * @param int|null $token
      * @param string $theme
@@ -66,8 +67,9 @@ class Competition extends DBA
             $vars[THEME],
             $vars[LOGO],
             $vars[FREE],
-            $vars[STARTED],
-            $vars[ENDED],
+            new DateTime($vars[STARTED]),
+            new DateTime($vars[ENDED],),
+
             Structure::_get(Criteria::ID, (int)$vars[STRCTR]),
             User::_get(Criteria::ID, (int)$vars[PROMOTR]),
             Status::_get(Criteria::ID, (int)$vars[STATUS]),
@@ -99,6 +101,23 @@ class Competition extends DBA
         ];
     }
 
+    public function getToken(): ?int
+    {
+        return $this->token;
+    }
+
+    public function setToken(?int $token): void
+    {
+        $this->token = $token;
+    }
+
+    public function save(): Competition
+    {
+
+        return self::_toBean($this);
+
+    }
+
     static protected function _toBean(?Competition $competition): ?Competition
     {
         if (!$competition->getPromoter() instanceof User)
@@ -118,9 +137,9 @@ class Competition extends DBA
         }
         $bean->{THEME} = QString::_set(QString::_latin($competition->getTheme()));
         $bean->{LOGO} = QString::_set(QString::_latin($competition->getLogo()));
-        $bean->{FREE} = (int)($competition->isFree());
+        $bean->{FREE} = $competition->isFree();
         $bean->{STARTED} = $competition->getStarted();
-        $bean->{ENDED} = (int)$competition->getEnded();
+        $bean->{ENDED} = $competition->getEnded();
         $bean->{STRCTR} = QString::_set(QString::_latin($competition->getStructure()->getId()));
         $bean->{PROMOTR} = QString::_set($competition->getPromoter()->getId());
         $bean->{STATUS} = QString::_set($competition->getStatus()->getId());
@@ -231,16 +250,6 @@ class Competition extends DBA
     public function setStatus(Status $status): void
     {
         $this->status = $status;
-    }
-
-    public function getToken(): ?int
-    {
-        return $this->token;
-    }
-
-    public function setToken(?int $token): void
-    {
-        $this->token = $token;
     }
 
 }
