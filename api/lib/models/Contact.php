@@ -322,11 +322,5 @@ class Contact extends DBA
         return true;
     }
 
-    public function getContacts()
-    {
-        $contacts = R::findAll('contact');
-        return $contacts;
-    }
-
 
 }

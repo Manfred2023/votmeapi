@@ -91,8 +91,27 @@ class Candidate extends DBA
             CONFIRMED => ($this->confirmed),
             CNTCT => $this->contact instanceof Contact ? $this->contact->toArray() : null,
             COMPTTN => $this->competition instanceof Competition ? $this->competition->toArray() : null,
-            CRTDBY => $this->createdby instanceof User ? $this->createdby->toArray() : null,
+
         ];
+    }
+
+    static public function getCandidateByCompetition(Competition $competition): array
+    {
+        $beans = R::findAll(self::TABLE, 'competition = ?', [$competition->getId()]);
+        foreach ($beans as $bean)
+            if (($item = self::_toObject($bean)) instanceof self)
+                $contacts[] = $item->toArray();
+        return $contacts ?? [];
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
     }
 
     public function getToken(): ?int
@@ -179,16 +198,6 @@ class Candidate extends DBA
     public function setCompetition(Competition $competition): void
     {
         $this->competition = $competition;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setId(?int $id): void
-    {
-        $this->id = $id;
     }
 
     static protected function shortToken(): int

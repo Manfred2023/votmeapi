@@ -53,6 +53,8 @@ const CONFIRMED = 'confirmed';
 const COMPTTN = 'competition';
 
 const CTGRY = 'category';
+const CMPTCTGR = 'competcategory';
+const CNDDT = 'candidate';
 
 const LABEL = 'label';
 const ACTION = 'action';

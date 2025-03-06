@@ -169,6 +169,18 @@ class DBInit
         
     ); 
  ",
+        'competcategorycandidat' => "
+        CREATE TABLE IF NOT EXISTS competcategorycandidat (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        token VARCHAR(100) NOT NULL UNIQUE,   
+        candidate INT NOT NULL, 
+        competcategory INT NOT NULL, 
+        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (candidate) REFERENCES candidate(id) ON DELETE CASCADE,
+        FOREIGN KEY (competcategory) REFERENCES competcategory(id) ON DELETE CASCADE
+        
+    ); 
+ ",
         'update' => "
         ALTER TABLE competition
 ADD COLUMN status INT NOT NULL;
