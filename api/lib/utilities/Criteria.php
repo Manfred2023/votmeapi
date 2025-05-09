@@ -14,6 +14,8 @@ class Criteria
     const TOKEN = 1;
     const ALPHA3 = 2;
     const MOBILE = 2;
+    const EMAIL = 3;
+    const USER = 3;
 
     /**
      * @param array|null $fields

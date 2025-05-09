@@ -32,6 +32,7 @@ const CODE = 'code';
 const BLCKD = 'blocked';
 const CNTCT = 'contact';
 const USER = 'user';
+const USER1 = 'userconnected';
 const PRFLE = 'profile';
 const CRTDBY = 'createdby';
 const MANAGR = 'manager';
@@ -55,6 +56,7 @@ const COMPTTN = 'competition';
 const CTGRY = 'category';
 const CMPTCTGR = 'competcategory';
 const CNDDT = 'candidate';
+const DTTM = 'datetime';
 
 const LABEL = 'label';
 const ACTION = 'action';

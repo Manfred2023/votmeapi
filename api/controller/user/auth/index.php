@@ -26,8 +26,9 @@ try {
     $data = json_decode($rawData, true);
 
     Criteria::_formRequiredCheck([MBLE, CODE], $data);
-    $date = new DateTime('now', new DateTimeZone('Africa/Douala'))->format('Y-m-d H:i:s');
-
+    //$date = new DateTime('now', new DateTimeZone('Africa/Douala'))->format('Y-m-d H:i:s');
+    $date = new DateTime('now', new DateTimeZone('UTC'));
+    $date->modify('+1 hour');
 
     if (!Helper::isCameroonianPhoneNumber($data[MBLE]))
         Reply::_error("user_authentication_failed");
@@ -39,7 +40,7 @@ try {
     if (!$user instanceof User) Reply::_error('user_authentication_failed', code: 401);
 
     if ($user->getCode() == $data[CODE]) {
-        $user->setLastlogin($date);
+        $user->setLastlogin($date->format('Y-m-d H:i:s'));
         $user->save();
         Reply::_success('user_authentication_successful');
     } else {

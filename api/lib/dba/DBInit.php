@@ -181,12 +181,14 @@ class DBInit
         
     ); 
  ",
-        'update' => "
-        ALTER TABLE competition
-ADD COLUMN status INT NOT NULL;
-
-ALTER TABLE competition
-ADD CONSTRAINT fk_status FOREIGN KEY (status) REFERENCES status(id) ON DELETE CASCADE;
+        'logintoken' => "
+        CREATE TABLE IF NOT EXISTS logintoken(
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        token VARCHAR(100) NOT NULL UNIQUE,   
+        datetime VARCHAR(100) NOT NULL ,   
+        userconnected INT NOT NULL,  
+        FOREIGN KEY (userconnected) REFERENCES user(id) ON DELETE CASCADE
+        )
 "
     ];
 

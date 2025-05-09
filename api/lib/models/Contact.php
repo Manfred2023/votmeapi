@@ -90,6 +90,7 @@ class Contact extends DBA
             $criteria == Criteria::ID && (int)$value > 0 => self::_toObject(parent::_getOne(self::TABLE, [parent::ID => (int)$value])),
             $criteria == Criteria::TOKEN && !QString::_isNull($value) => self::_toObject(parent::_getOne(self::TABLE, [parent::TOKEN => trim($value)])),
             $criteria == Criteria::MOBILE && !QString::_isNull($value) => self::_toObject(parent::_getOne(self::TABLE, [Criteria::MOBILE => trim($value)])),
+            $criteria == Criteria::EMAIL && !QString::_isNull($value) => self::_toObject(parent::_getOne(self::TABLE, [EMAIL => trim($value)])),
             default => null,
         };
     }
