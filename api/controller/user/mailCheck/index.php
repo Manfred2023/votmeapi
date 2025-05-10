@@ -29,12 +29,15 @@ try {
 
     Criteria::_formRequiredCheck([TOKEN], $data);
 
-   /* $date = new DateTime('now', new DateTimeZone('UTC'));
-    $date->modify('+1 hour');*/
+    $date = new DateTime('now', new DateTimeZone('UTC'));
+    $date->modify('+1 hour');
 
     $currentUser = LoginToken::_get(Criteria::TOKEN, $data[TOKEN]);
     if(!$currentUser instanceof LoginToken) Reply::_error('Bad_token');
 
+    $user = clone $currentUser->getUser();
+    $user->setLastlogin($date->format('Y-m-d H:i:s'));
+    $user->save();
     Reply::_success($currentUser->getUser()->toArray());
 
 
