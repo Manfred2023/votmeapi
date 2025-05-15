@@ -9,9 +9,11 @@
  */
 
 require dirname(__DIR__, 2) . '/conf.php';
-
+require_once dirname(__DIR__, 2) . '/lib/utilities/Auth.php';
 error_reporting(E_ALL);
+
 ini_set('display_errors', 1);
+validateBearerToken();
 try {
     Reply::_success(Category::_list());
 } catch (Exception $e) {

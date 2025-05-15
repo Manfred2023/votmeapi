@@ -9,6 +9,8 @@
  */
 
 require dirname(__DIR__, 2) . '/conf.php';
+require_once dirname(__DIR__, 2) . '/lib/utilities/Auth.php';
+validateBearerToken();
 try {
     Reply::_success(Structure::_list());
 } catch (Exception $e) {
