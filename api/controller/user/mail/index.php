@@ -55,7 +55,7 @@ try {
         $loginToken->save();
     }
 
-    sendLoginTokenMail($user->getContact()->getEmail(), $token,$date->format('Y-m-d H:i:s'),$user->getContact()->getLastname());
+   sendLoginTokenMail($user->getContact()->getEmail(), $token,$date->format('Y-m-d H:i:s'),$user->getContact()->getLastname());
     Reply::_success("successful");
 
 

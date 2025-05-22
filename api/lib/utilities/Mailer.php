@@ -8,50 +8,49 @@ function sendLoginTokenMail(string $toEmail, string $token, string $date, string
     $mail = new PHPMailer(true);
 
     try {
-        // Configuration serveur SMTP
+
         $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
+        $mail->Host       = 'raven.o2switch.net';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'moukatemanfred@gmail.com';
-        $mail->Password   = 'uras ygyh xike aibq'; // 🔒 Astuce : mets ça dans un fichier .env !
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+        $mail->Username   = 'noreply@fredcode.net';
+        $mail->Password   = 'Manfred500.';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port       = 465;
 
         // Expéditeur
-        $mail->setFrom('moukatemanfred@gmail.com', 'VotMe');
+        $mail->setFrom('noreply@fredcode.net', 'VotMe');
         // Destinataire
         $mail->addAddress($toEmail);
 
-        // Contenu de l'e-mail
+        // Contenu du mail
         $mail->isHTML(true);
         $mail->Subject = "VOTRE JETON DE CONNEXION, $date";
 
         $mail->Body = "
             <p>Cher $lastname,</p>
-        
             <p>Pour vous connecter, votre jeton est :</p>
             <h2>$token</h2>
-        
-            <p><strong>AVERTISSEMENT :</strong> Votre jeton est hautement confidentiel. Vous risquez d'être victime d'une grave usurpation d'identité s'il est divulgué.</p>
-        
-            <p>Vous pouvez vous connecter directement en cliquant sur le lien ci-dessous :</p>
-            <p><a href='https://votme.com/fr/portal/login/{$token}.com'>https://votme.com/fr/portal/login/{$token}.com</a></p>
-        
+            <p><strong>AVERTISSEMENT :</strong> Ce jeton est confidentiel.</p>
+            <p>Connexion directe : 
+                <a href='https://votme.com/fr/portal/login/{$token}.com'>
+                    https://votme.com/fr/portal/login/{$token}.com
+                </a>
+            </p>
             <br>
             <p>Cordialement,<br>
-            La team VotMe+<br>
+            L’équipe VotMe+<br>
             <a href='https://votme.cm'>https://votme.cm</a><br>
-            Email : support@votme.cm</p> 
+            support@votme.cm</p>
         ";
 
         $mail->AltBody = "Cher $lastname,\n\n"
-            . "Pour vous connecter, votre jeton est : $token\n\n"
-            . "AVERTISSEMENT : Votre jeton est hautement confidentiel. Vous risquez une grave usurpation d'identité s'il est divulgué.\n\n"
+            . "Jeton : $token\n"
             . "Connexion directe : https://votme.com/fr/portal/login/{$token}.com\n\n"
-            . "Cordialement,\nLa team VotMe+\nhttps://votme.cm\nsupport@votme.cm";
+            . "Cordialement,\nLa team VotMe+";
 
         $mail->send();
         return true;
+
     } catch (Exception $e) {
         error_log("Erreur d'envoi de mail à $toEmail : {$mail->ErrorInfo}");
         return false;

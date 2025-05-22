@@ -12,12 +12,12 @@ try {
     Reply::_success(
         [
             "competition" => count($competition),
-            "candidait" => count($candidate),
+            "candidat" => count($candidate),
             "contact" => count($contact),
             "structure" => count($structure),
             "promoteur" => count($user),
         ]
     );
 } catch (Exception $e) {
-    $contacts = [];
+    Reply::_error($e->getMessage());
 }
