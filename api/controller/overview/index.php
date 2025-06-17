@@ -8,7 +8,7 @@ try {
     $candidate = Candidate::_list();
     $contact = Contact::_list();
     $structure = Structure::_list();
-    $user = User::_list();
+    $user = User::getAllPromoter();
     Reply::_success(
         [
             "competition" => count($competition),

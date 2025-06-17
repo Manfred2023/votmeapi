@@ -53,6 +53,7 @@ try {
         $result->setCity($contact->getCity());
         $result->setMobile($contact->getMobile());
         $result->setLang($contact->getLang());
+        $result->setLocation($contact->getLocation());
         $resultt = $result->save();
         if ($resultt instanceof Contact)
             Reply::_success($resultt->toArray());

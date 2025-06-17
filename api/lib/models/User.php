@@ -41,11 +41,59 @@ class User extends DBA
     static public function _list(): ?array
     {
         if (!empty($beans = parent::_getAll(self::TABLE, []))) {
+
             foreach ($beans as $bean)
                 if (($item = self::_toObject($bean)) instanceof self)
                     $contacts[] = $item->toArray();
         }
         return $contacts ?? null;
+    }
+    static public function getAllPromoter(): ?array
+    {
+        if (!empty($beans = parent::_getAll(self::TABLE, []))) {
+            foreach ($beans as $bean)
+                if (($item = self::_toObject($bean)) instanceof self)
+                        if($item->isPromotor()){
+                            $contacts[] = $item->toArray();
+                        }
+
+
+        }
+        return $contacts ?? null;
+    }
+ /*   static public function getAllAssociate(self $userParam): ?array
+    {
+        if (!empty($beans = parent::_getAll(self::TABLE, []))) {
+            foreach ($beans as $bean)
+                if (($item = self::_toObject($bean)) instanceof self)
+                    if($item->getCreatedby() != null){
+                        if($item->getCreatedby()->getToken() == $userParam->getToken())
+                            $contacts[] = $item->toArray();
+                    }
+
+
+        }
+        return $contacts ?? null;
+    }*/
+
+    public static function getAllAssociate(self $userParam): ?array
+    {
+        $contacts = [];
+
+        $beans = parent::_getAll(self::TABLE, []);
+        if (!empty($beans)) {
+            foreach ($beans as $bean) {
+                $item = self::_toObject($bean);
+                if ($item instanceof self) {
+                    $createdBy = $item->getCreatedby();
+                    if ($createdBy !== null && $createdBy->getToken() === $userParam->getToken()) {
+                        $contacts[] = $item->toArray();
+                    }
+                }
+            }
+        }
+
+        return !empty($contacts) ? $contacts : null;
     }
 
     static protected function _toObject(?OODBBean $bean): ?User
@@ -130,6 +178,9 @@ class User extends DBA
         return true;
     }
 
+    /**
+     * @throws \RedBeanPHP\RedException\SQL
+     */
     static protected function _toBean(?User $user): ?User
     {
         if (!$user instanceof User)
@@ -168,6 +219,21 @@ class User extends DBA
     public function getProfile(): Profile
     {
         return $this->profile;
+    }
+
+    public function isPromotor():bool
+    {
+        if($this->getProfile()->getLabel() == "promoter"){
+            return true;
+        }
+        return false;
+    }
+    public function isAssociate():bool
+    {
+        if($this->getProfile()->getLabel() == "associate"){
+            return true;
+        }
+        return false;
     }
 
     public function setProfile(Profile $profile): void

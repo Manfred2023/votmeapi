@@ -17,6 +17,7 @@ class Reply
     private const TYPE = 'type';
     private const MESSAGE = 'message';
     private const BEARER = 'bearer';
+    private const IMG = 'url';
 
     /**
      * @param $result
@@ -30,6 +31,16 @@ class Reply
             self::STATUS => 1,
             self::TYPE => $type,
             ((is_array($result) && !empty($result)) ? self::RESPONSE : self::MESSAGE) => $result]);
+        exit();
+    }
+    #[NoReturn] public static function _successImage($result, $code = 200, $type = 'dataset'): void
+    {
+        http_response_code($code);
+        header('Content-Type: application/json');
+        echo json_encode([
+            self::STATUS => 1,
+            self::TYPE => $type,
+            ((is_array($result) && !empty($result)) ? self::RESPONSE : self::IMG) => $result]);
         exit();
     }
 
