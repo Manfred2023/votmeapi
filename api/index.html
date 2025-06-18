@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casseur d'OTP - Version Corrigée</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff00;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+        }
+        h1 {
+            color: #00ff00;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #00ff00;
+            font-size: 2em;
+        }
+        .test-section {
+            background: rgba(50, 0, 0, 0.5);
+            border: 1px solid #ff6600;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .challenge-data {
+            background: rgba(0, 50, 0, 0.5);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        button {
+            background: linear-gradient(135deg, #004400 0%, #008800 100%);
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #008800 0%, #00cc00 100%);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .progress {
+            margin: 20px 0;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            height: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #008800);
+            width: 0%;
+            transition: width 0.1s;
+            position: relative;
+        }
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ff00;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #000;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #00ff00;
+            background: rgba(0, 50, 0, 0.3);
+        }
+        .result {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 5px;
+            border: 2px solid #00ff00;
+            background: rgba(0, 100, 0, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        .result.success {
+            border-color: #00ff00;
+            background: rgba(0, 150, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(0, 255, 0, 0.6); }
+            100% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.3); }
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            background: rgba(0, 50, 0, 0.3);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00ff00;
+        }
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+        .all-results {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+            display: none;
+        }
+        .result-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(0, 50, 0, 0.3);
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .result-item.valid {
+            background: rgba(0, 100, 0, 0.5);
+            border: 1px solid #00ff00;
+        }
+        input {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔓 CASSEUR D'OTP - VERSION CORRIGÉE</h1>
+
+    <div class="test-section">
+        <h3>🧪 TEST DE VALIDATION:</h3>
+        <p>Données de test (réponse: 8475):</p>
+        <pre>{
+    "encryptedData": "aa5fcbe6b570b226fc95c67097b9f774",
+    "iv": "fbb6b357824243a628f2d6d9b45e6e03"
+}</pre>
+        <button onclick="testValidation()">🧪 TESTER AVEC OTP 8475</button>
+        <div id="testResult"></div>
+    </div>
+
+    <div class="challenge-data">
+        <h3>📊 DONNÉES DU DÉFI:</h3>
+        <pre>{
+    "encryptedData": "bc39bb0d2eb1e310f6f50828cfdc0dfb",
+    "iv": "22876d48eda2769330fe7eee6f376cc1"
+}</pre>
+    </div>
+
+    <div class="controls">
+        <button id="startBtn" onclick="startCracking()">🚀 LANCER L'ATTAQUE</button>
+        <button id="stopBtn" onclick="stopCracking()" disabled>⏹️ ARRÊTER</button>
+        <button onclick="toggleResults()">📋 VOIR TOUS LES RÉSULTATS</button>
+        <br>
+        <input type="number" id="testOtp" placeholder="Tester un OTP spécifique" min="0" max="9999">
+        <button onclick="testSpecificOtp()">🔍 TESTER</button>
+    </div>
+
+    <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-text" id="progressText">0000 / 9999 (0%)</div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-box">
+            <div class="stat-value" id="currentOtp">0000</div>
+            <div class="stat-label">OTP TESTÉ</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value" id="speed">0</div>
+            <div class="stat-label">OTP/SEC</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value" id="timeElapsed">00:00</div>
+            <div class="stat-label">TEMPS</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value" id="validResults">0</div>
+            <div class="stat-label">RÉSULTATS VALIDES</div>
+        </div>
+    </div>
+
+    <div id="status" class="status">
+        💾 Prêt à commencer l'attaque par force brute...
+    </div>
+
+    <div id="result"></div>
+    <div id="allResults" class="all-results"></div>
+</div>
+
+<script>
+    const testData = {
+        encryptedData: "f4dcd49138fc42a58535cea6182e99e6",
+        iv: "5f44c298c760b214695fa17d7fa64cda"
+    };
+
+    const challengeData = {
+        encryptedData: "f4dcd49138fc42a58535cea6182e99e6",
+        iv: "5f44c298c760b214695fa17d7fa64cda"
+    };
+
+    let isRunning = false;
+    let currentOtp = 0;
+    let startTime;
+    let allResults = [];
+
+    function hexToWordArray(hex) {
+        return CryptoJS.enc.Hex.parse(hex);
+    }
+
+    // Fonction principale de déchiffrement - exactement comme votre système
+    function decryptWithOtp(data, otp) {
+        try {
+            const otpStr = otp.toString().padStart(4, '0');
+            const encryptedData = hexToWordArray(data.encryptedData);
+            const iv = hexToWordArray(data.iv);
+
+            // Test avec clé MD5 (méthode la plus courante)
+            const key = CryptoJS.MD5(otpStr);
+
+            const decrypted = CryptoJS.AES.decrypt(
+                { ciphertext: encryptedData },
+                key,
+                { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
+            );
+
+            const result = decrypted.toString(CryptoJS.enc.Utf8);
+
+            return {
+                success: result.length > 0,
+                result: result,
+                method: `AES-CBC with MD5("${otpStr}")`
+            };
+        } catch (e) {
+            return { success: false, error: e.message };
+        }
+    }
+
+    function testValidation() {
+        const result = decryptWithOtp(testData, 8475);
+        const testResultDiv = document.getElementById('testResult');
+
+        if (result.success) {
+            testResultDiv.innerHTML = `
+                    <div style="color: #00ff00; margin-top: 10px;">
+                        ✅ <strong>SUCCÈS!</strong> OTP 8475 déchiffre: "${result.result}"<br>
+                        Méthode: ${result.method}
+                    </div>
+                `;
+        } else {
+            testResultDiv.innerHTML = `
+                    <div style="color: #ff0000; margin-top: 10px;">
+                        ❌ <strong>ÉCHEC:</strong> ${result.error || 'Aucun résultat'}
+                    </div>
+                `;
+        }
+    }
+
+    function testSpecificOtp() {
+        const otpInput = document.getElementById('testOtp');
+        const otp = parseInt(otpInput.value);
+
+        if (isNaN(otp) || otp < 0 || otp > 9999) {
+            alert('Veuillez entrer un OTP valide entre 0000 et 9999');
+            return;
+        }
+
+        const result = decryptWithOtp(challengeData, otp);
+        const statusDiv = document.getElementById('status');
+
+        if (result.success && result.result.trim().length > 0) {
+            statusDiv.innerHTML = `
+                    🎯 <strong>OTP ${otp.toString().padStart(4, '0')} testé:</strong> "${result.result}"
+                `;
+        } else {
+            statusDiv.innerHTML = `
+                    ❌ <strong>OTP ${otp.toString().padStart(4, '0')}:</strong> Aucun résultat valide
+                `;
+        }
+    }
+
+    function isLikelyValidText(text) {
+        if (!text || text.length === 0) return false;
+
+        // Vérifier si c'est du texte ASCII imprimable
+        if (!/^[\x20-\x7E\s]*$/.test(text)) return false;
+
+        // Doit contenir au moins quelques caractères
+        if (text.trim().length < 2) return false;
+
+        // Doit contenir au moins une lettre ou un chiffre
+        if (!/[a-zA-Z0-9]/.test(text)) return false;
+
+        return true;
+    }
+
+    function updateProgress() {
+        const progress = (currentOtp / 9999) * 100;
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        progressBar.style.width = `${progress}%`;
+        progressText.textContent = `${currentOtp.toString().padStart(4, '0')} / 9999 (${progress.toFixed(1)}%)`;
+
+        document.getElementById('currentOtp').textContent = currentOtp.toString().padStart(4, '0');
+        document.getElementById('validResults').textContent = allResults.filter(r => r.valid).length;
+
+        if (startTime) {
+            const elapsed = (Date.now() - startTime) / 1000;
+            const speed = Math.round(currentOtp / elapsed);
+            document.getElementById('speed').textContent = speed;
+
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = Math.floor(elapsed % 60);
+            document.getElementById('timeElapsed').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+    }
+
+    function addResult(otp, result) {
+        const isValid = result.success && isLikelyValidText(result.result);
+
+        allResults.push({
+            otp: otp,
+            result: result.result || 'Erreur',
+            valid: isValid,
+            method: result.method
+        });
+
+        // Ajouter à l'affichage des résultats
+        const allResultsDiv = document.getElementById('allResults');
+        const resultDiv = document.createElement('div');
+        resultDiv.className = `result-item ${isValid ? 'valid' : ''}`;
+        resultDiv.innerHTML = `
+                <strong>${otp.toString().padStart(4, '0')}:</strong>
+                "${result.result}"
+                ${isValid ? '✅' : ''}
+            `;
+        allResultsDiv.appendChild(resultDiv);
+        allResultsDiv.scrollTop = allResultsDiv.scrollHeight;
+    }
+
+    async function crackOtp() {
+        const statusDiv = document.getElementById('status');
+        const resultDiv = document.getElementById('result');
+
+        startTime = Date.now();
+        allResults = [];
+        document.getElementById('allResults').innerHTML = '';
+
+        let bestResult = null;
+
+        for (currentOtp = 0; currentOtp <= 9999 && isRunning; currentOtp++) {
+            const result = decryptWithOtp(challengeData, currentOtp);
+
+            if (result.success && result.result.trim().length > 0) {
+                addResult(currentOtp, result);
+
+                if (isLikelyValidText(result.result)) {
+                    if (!bestResult || result.result.length > bestResult.result.length) {
+                        bestResult = {
+                            otp: currentOtp,
+                            result: result.result,
+                            method: result.method
+                        };
+                    }
+                }
+            }
+
+            if (currentOtp % 100 === 0) {
+                updateProgress();
+                statusDiv.innerHTML = `🔍 Test en cours... OTP: ${currentOtp.toString().padStart(4, '0')}`;
+                await new Promise(resolve => setTimeout(resolve, 1));
+            }
+        }
+
+        updateProgress();
+
+        if (bestResult) {
+            statusDiv.innerHTML = `🎉 <strong>MEILLEUR RÉSULTAT TROUVÉ!</strong>`;
+            resultDiv.innerHTML = `
+                    <div class="result success">
+                        <h3>🏆 RÉSULTAT LE PLUS PROBABLE</h3>
+                        <p><strong>🔑 OTP:</strong> <span style="font-size: 2em; color: #ffff00;">${bestResult.otp.toString().padStart(4, '0')}</span></p>
+                        <p><strong>📝 Message:</strong></p>
+                        <div style="background: rgba(0, 0, 0, 0.5); padding: 15px; border-radius: 5px; margin: 10px 0; font-size: 1.2em; color: #ffff00;">
+                            <code>${bestResult.result}</code>
+                        </div>
+                        <p><strong>🔧 Méthode:</strong> ${bestResult.method}</p>
+                        <p><strong>⏱️ Temps:</strong> ${((Date.now() - startTime) / 1000).toFixed(2)} secondes</p>
+                        <p><strong>📊 Total résultats valides:</strong> ${allResults.filter(r => r.valid).length}</p>
+                    </div>
+                `;
+        } else {
+            statusDiv.innerHTML = `❌ Aucun résultat valide trouvé`;
+            resultDiv.innerHTML = `
+                    <div class="result">
+                        <h3>🔍 Recherche terminée</h3>
+                        <p>Aucun texte lisible trouvé avec les OTP testés.</p>
+                        <p>Total résultats: ${allResults.length}</p>
+                    </div>
+                `;
+        }
+
+        stopCracking();
+    }
+
+    function startCracking() {
+        if (isRunning) return;
+
+        isRunning = true;
+        currentOtp = 0;
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = false;
+        document.getElementById('result').innerHTML = '';
+
+        crackOtp();
+    }
+
+    function stopCracking() {
+        isRunning = false;
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('stopBtn').disabled = true;
+        updateProgress();
+    }
+
+    function toggleResults() {
+        const resultsDiv = document.getElementById('allResults');
+        resultsDiv.style.display = resultsDiv.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Initialiser
+    updateProgress();
+</script>
+</body>
+</html>

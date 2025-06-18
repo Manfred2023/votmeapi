@@ -136,7 +136,7 @@ class Competition extends DBA
             $bean->{self::TOKEN} = (int)self::shortToken(self::TABLE);
         }
         $bean->{THEME} = QString::_set(QString::_latin($competition->getTheme()));
-        $bean->{LOGO} = QString::_set(QString::_latin($competition->getLogo()));
+        $bean->{LOGO} = $competition->getLogo();
         $bean->{FREE} = $competition->isFree();
         $bean->{STARTED} = $competition->getStarted();
         $bean->{ENDED} = $competition->getEnded();

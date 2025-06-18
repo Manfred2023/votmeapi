@@ -29,7 +29,7 @@ try {
     $rawData = file_get_contents('php://input');
     $data = json_decode($rawData, true);
 
-    Criteria::_formRequiredCheck([TOKEN, THEME, LOGO, FREE, STARTED, ENDED, STRCTR, PROMOTR], $data);
+    Criteria::_formRequiredCheck([TOKEN, THEME,  FREE, STARTED, ENDED, STRCTR, PROMOTR], $data);
     $started = new DateTime($data[STARTED]);
     //$formattedDate = $started->format('Y-m-d H:i:s');
     $ended = new DateTime($data[ENDED]);
@@ -43,7 +43,7 @@ try {
     //if($user->getProfile()->getLabel() == 'admin')
     $status = Status::_get(Criteria::TOKEN, 100001);
 
-    $competition = new Competition(null, $data[TOKEN], $data[THEME], $data[LOGO], $data[FREE], $started, $ended, $structure, $user, $status);
+    $competition = new Competition(null, $data[TOKEN], $data[THEME], "https://votme.fredcode.net/uploads/image/img_6852c9e868090.png", $data[FREE], $started, $ended, $structure, $user, $status);
 
 
     if ($competition->getToken() != null) {
