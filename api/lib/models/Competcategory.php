@@ -60,6 +60,17 @@ class Competcategory extends DBA
         }
         return $action ?? null;
     }
+    static public function getCategoryByCompet(Competition $competition): ?array
+    {
+        if (!empty($beans = parent::_getAll(self::TABLE, []))) {
+            foreach ($beans as $bean)
+                if (($item = self::_toObject($bean)) instanceof self)
+                    if($item->competition->getToken() == $competition->getToken())
+                    $action[] = $item->toArray();
+
+        }
+        return $action ?? null;
+    }
 
     public function toArray(): array
     {

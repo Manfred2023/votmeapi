@@ -46,7 +46,7 @@ function sendLoginTokenMail(string $toEmail, string $token, string $date, string
                         <p>⚠️ Ce jeton est personnel et confidentiel. Ne le partagez avec personne.</p>
                         <p>👉 Cliquez ici pour vous connecter directement :</p>
                         <p>  
-                            <a href='http://localhost:5173/portal/login/{$token}' 
+                            <a href='https://admin-votme.fredcode.net/portal/login/{$token}' 
                                style='display: inline-block; padding: 10px 20px; background: #1a73e8; color: white; text-decoration: none; border-radius: 5px;'>
                                 Accéder à mon espace
                             </a>

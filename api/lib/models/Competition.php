@@ -54,6 +54,21 @@ class Competition extends DBA
         return $contacts ?? null;
     }
 
+    /**
+     * @param User $user
+     * @return array|null
+     */
+    static public function competitionByPromoter(User $user): ?array
+    {
+        if (!empty($beans = parent::_getAll(self::TABLE, []))) {
+            foreach ($beans as $bean)
+                if (($item = self::_toObject($bean)) instanceof self)
+                    if($item->promoter->getToken() == $user->getToken())
+                    $contacts[] = $item->toArray();
+        }
+        return $contacts ?? null;
+    }
+
     static protected function _toObject(?OODBBean $bean): ?Competition
     {
         if (!$bean instanceof OODBBean || $bean->isEmpty())
