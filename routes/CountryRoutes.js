@@ -1,9 +1,13 @@
-// routes/CountryRoutes.js
+// routes/countryRoutes.js
 const express = require('express');
-const { getAllUsers } = require('../controllers/CountryController');
-const CountryRouter = express.Router();
+const ctrl = require('../controllers/countryController');
+const router = express.Router();
 
-CountryRouter.get('/', getAllUsers);
-CountryRouter.post('/', getAllUsers);
 
-module.exports = CountryRouter;
+router.post('/', ctrl.create);
+router.get('/', ctrl.index);
+router.get('/:guid', ctrl.show);
+router.put('/:guid', ctrl.update);
+router.delete('/:guid', ctrl.destroy);
+
+module.exports = router;

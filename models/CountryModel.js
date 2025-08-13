@@ -1,5 +1,6 @@
 // models/CountryModel.js
 const { DataTypes } = require('sequelize');
+const { v4: uuidv4 } = require('uuid');
 const sequelize = require('../config/database');
 
 const CountryModel = sequelize.define('Country', {
@@ -9,8 +10,9 @@ const CountryModel = sequelize.define('Country', {
         autoIncrement: true,
     },
     guid: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
+        defaultValue: DataTypes.UUIDV4,
         unique: {
             code : "must be unique",
             msg: "must be unique"
@@ -53,5 +55,19 @@ const CountryModel = sequelize.define('Country', {
     tableName: 'country',
     timestamps: true,
 });
+
+CountryModel.beforeCreate((country) => {
+    if (!country.guid) {
+        country.guid = uuidv4();
+    }
+});
+
+CountryModel.prototype.toJSON = function () {
+    const values = { ...this.get() };
+    delete values.id;
+    delete values.createdAt;
+    delete values.updatedAt;
+    return values;
+};
 
 module.exports = CountryModel;

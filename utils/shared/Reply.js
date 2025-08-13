@@ -4,7 +4,6 @@ class Reply {
     static success(res, data = {}, message = 'Opération réussie', status = 200) {
         return res.status(status).json({
             success: true,
-            message,
             data,
         });
     }
@@ -16,11 +15,18 @@ class Reply {
     }
 
 
-    static errorServer(res, message = 'Une erreur est survenue', status = 500, data = {}) {
+    static errorServer(res, message = 'Une erreur est survenue', status = 500 ) {
         return res.status(status).json({
             success: false,
             message,
-            data,
+
+        });
+    }
+    static notFound(res, message = 'not found', status = 404 ) {
+        return res.status(status).json({
+            success: false,
+            message,
+
         });
     }
 
@@ -30,6 +36,11 @@ class Reply {
             success: false,
             message,
 
+        });
+    }
+    static destroy(res,   status = 204 ) {
+        return res.status(status).json({
+            success: false,
         });
     }
 }

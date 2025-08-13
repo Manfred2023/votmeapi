@@ -9,14 +9,14 @@ const CountryRouter = require("../routes/CountryRoutes");
 const app = express();
 const { generateToken } = require('../middleware/auth');
 const rateLimiter = require('../middleware/rateLimiter');
-const Reply = require("../services/shared/Reply");
+const Reply = require("../utils/shared/Reply");
 
 app.use(cors());
 app.use(express.json());
 app.use(rateLimiter);
 
 
-app.use('/country', CountryRouter);
+app.use('/api/country', CountryRouter);
 
 app.post('/authBearer', (req, res) => {
     console.log(req)
