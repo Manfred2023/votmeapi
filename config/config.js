@@ -5,6 +5,7 @@ const config = {
         name: process.env.APP_NAME,
         version: process.env.APP_VERSION,
         port: process.env.PORT || 3000,
+        code : process.env.APP_CODE
     },
     db: {
         host: process.env.DB_HOST,
