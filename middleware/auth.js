@@ -1,11 +1,17 @@
 // middleware/jwtSimple.js
 const jwt = require('jsonwebtoken');
+const config = require('../config/config');
 
-
-function generateToken(apiKey, appName, expiresIn = '2h') {
-    const payload = { apiKey, appName };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
-    return `Bearer ${token}`;
+/**
+ * generate user unique token
+ * @param {Object} clientData 
+ * @param {*} expiresIn default '2h'
+ * @returns Bearer token
+ */
+function generateToken(clientData, expiresIn = config.jwt.expireIn_h) {
+    const payload = clientData;
+    const token = jwt.sign(payload, config.jwt.secret, { expiresIn });
+    return token;
 }
 
 function verifyToken(req, res, next) {
@@ -15,7 +21,7 @@ function verifyToken(req, res, next) {
     if (!token) return res.status(401).json({ success: false, message: 'Token manquant' });
 
     try {
-        req.client = jwt.verify(token, process.env.JWT_SECRET); // apiKey + appName disponible dans req.client
+        req.client = jwt.verify(token, config.jwt.secret); // apiKey + appName disponible dans req.client
         next();
     } catch (err) {
         return res.status(403).json({ success: false, message: 'Token invalide' });
