@@ -5,7 +5,7 @@ const config = {
         name: process.env.APP_NAME,
         version: process.env.APP_VERSION,
         port: process.env.PORT || 3000,
-        code : process.env.APP_CODE
+        code: process.env.APP_CODE
     },
     db: {
         host: process.env.DB_HOST,
@@ -14,10 +14,13 @@ const config = {
         password: process.env.DB_PASS,
         port: process.env.DB_PORT
     },
-    jwt: {
+    jwt: {  // you can use "1h", "60s", "2d"
         secret: process.env.JWT_SECRET,
-        expireIn_h: '2h',
-        expireIn_s: '7200' //in seconds 
+        access_expireIn_h: '24h',
+        access_expireIn_s: '86400', //in seconds
+        refresh_expireIn_d: '7d',
+        refresh_expireIn_s: '604800' //in seconds
+
     },
 };
 

@@ -8,7 +8,7 @@ const config = require('../config/config');
  * @param {*} expiresIn default '2h'
  * @returns Bearer token
  */
-function generateToken(clientData, expiresIn = config.jwt.expireIn_h) {
+function generateToken(clientData, expiresIn = '24h') {
     const payload = clientData;
     const token = jwt.sign(payload, config.jwt.secret, { expiresIn });
     return token;
@@ -24,7 +24,10 @@ function verifyToken(req, res, next) {
         req.client = jwt.verify(token, config.jwt.secret); // apiKey + appName disponible dans req.client
         next();
     } catch (err) {
-        return res.status(403).json({ success: false, message: 'Token invalide' });
+        return res.status(403).json({ success: false,
+            error: "invalid token",
+            error_description: "token is expired or revoked",
+        });
     }
 }
 
