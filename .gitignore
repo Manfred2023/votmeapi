@@ -1,11 +1,13 @@
 # Ignore Node.js dependencies and build output
 node_modules/
+node_modules
 
 # Ignore editor/IDE specific files
 .idea/
 .vscode/
 *.swp
 *.bak
+.htaccess
 
 #Ignore api environmennr varuabke
 .env

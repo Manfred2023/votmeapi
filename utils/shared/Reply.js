@@ -1,3 +1,5 @@
+const config = require("../../config/config");
+
 // shared/Reply.js
 class Reply {
 
@@ -7,22 +9,24 @@ class Reply {
             data,
         });
     }
-    static bearer(res,  bearer , status = 200) {
+    static bearer(res, accessToken, refreshToken, status = 200) {
         return res.status(status).json({
             success: true,
-            bearer,
+            access_token: accessToken,
+            token_type: "Bearer",
+            expires_in: config.jwt.access_expireIn_s,
+            refresh_token: refreshToken
         });
     }
 
-
-    static errorServer(res, message = 'Une erreur est survenue', status = 500 ) {
+    static errorServer(res, message = 'Une erreur est survenue', status = 500) {
         return res.status(status).json({
             success: false,
             message,
 
         });
     }
-    static notFound(res, message = 'not found', status = 404 ) {
+    static notFound(res, message = 'not found', status = 404) {
         return res.status(status).json({
             success: false,
             message,
@@ -31,14 +35,14 @@ class Reply {
     }
 
 
-    static fail(res, message = 'Requête invalide', status = 400 ) {
+    static fail(res, message = 'Requête invalide', status = 400) {
         return res.status(status).json({
             success: false,
             message,
 
         });
     }
-    static destroy(res,   status = 204 ) {
+    static destroy(res, status = 204) {
         return res.status(status).json({
             success: false,
         });
