@@ -1,6 +1,6 @@
 // routes/countryRoutes.js
 const express = require('express');
-const ctrl = require('../controllers/countryController');
+const ctrl = require('../controllers/CountryController');
 const router = express.Router();
 
 

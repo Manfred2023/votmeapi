@@ -1,12 +1,12 @@
-// server.js
+// index.js
 const express = require('express');
 const cors = require('cors');
-const sequelize = require('../config/database');
-const rateLimiter = require('../middleware/rateLimiter');
-const routes = require("../routes"); //central routes loader
+const sequelize = require('./config/database');
+const rateLimiter = require('./middleware/rateLimiter');
+const routes = require("./routes/"); //central routes loader
 
-const config = require("../config/config");
-const ApiError = require('../utils/shared/errors');
+const config = require("./config/config");
+const ApiError = require('./utils/shared/errors');
 
 const app = express();
 

@@ -8,8 +8,9 @@ const config = require("../config/config");
 // - Le code de l’application(ce code lui sera donné par le service technique)
 
 const createClientIdSchema = Joi.object({
-    name: Joi.string().required().messages({
-        "string.base": "Name must be a text string",
+    name: Joi.string().valid(config.app.name).required().messages({
+        // "string.base": "Name must be a text string",
+        "any.only": "Invalid app name",
         "string.empty": "Name is required",
         "any.required": "Name is required"
     }),
@@ -31,8 +32,9 @@ const createClientIdSchema = Joi.object({
 })
 
 const refreshClientIdSchema = Joi.object({
-    name: Joi.string().required().messages({
-        "string.base": "Name must be a text string",
+    name: Joi.string().valid(config.app.name).required().messages({
+        // "string.base": "Name must be a text string",
+        "any.only": "Invalid app name",
         "string.empty": "Name is required",
         "any.required": "Name is required"
     }),
@@ -55,7 +57,7 @@ const refreshClientIdSchema = Joi.object({
         .custom((value, helpers) => {
             try {
                 const data = jwt.verify(value, config.jwt.secret);
-                if (data?.code !== config.app.code || data?.version !== config.app.version) {
+                if (data?.code !== config.app.code || data?.version !== config.app.version || data?.name !== config.app.name) {
                     return helpers.error("any.invalid");
                 }
                 // If valid, return the original token value
