@@ -4,11 +4,17 @@ const Reply = require("../utils/shared/Reply");
 
 exports.create = async (req, res) => {
     try {
+        const reqData = req.validated;
+        // const found = await svc.findCountry(reqData?.name);
 
-        const found = await svc.findCountry(reqData?.name);
+        // if (found !== null)
+        //     return Reply.errorServer(res, "country already exist", 409, "The country data you provided has already been saved", req);
 
-        if (found !== null)
-            return Reply.errorServer(res, "country already exist", 409, "The country data you provided has already been saved", req);
+        const errors = await svc.validateFieldsInDB(reqData);
+        console.log(reqData);
+        if (errors.length > 0) {
+            return Reply.fail(res, "country data already exist", "One or more fields you provided already exist", 409, req, errors);
+        }
 
 
         const savedCountry = await svc.createCountry(req.body);
@@ -21,7 +27,7 @@ exports.create = async (req, res) => {
     }
 };
 
-exports.index = async (_req, res) => {
+exports.index = async (req, res) => {
     try {
 
         const countries = await svc.listCountries();
@@ -75,8 +81,15 @@ exports.update = async (req, res) => {
 };
 
 exports.destroy = async (req, res) => {
-    const n = await svc.deleteCountry(req.params.id);
-    if (!n) return Reply.notFound(res);
-    Reply.destroy(res)
+    try {
+        const n = await svc.deleteCountry(req.params.guid);
+        if (!n)
+            return Reply.notFound(res, "Not found", "country doens't exist", 404, req);
+
+        return Reply.destroy(res, "Country deleted successfully");
+    } catch (err) {
+        // console.log("An unespected error occur when updating country", err);
+        return Reply.errorServer(res, "error while deleting the country", 500, "An unespected error occur, try again later", req);
+    }
 };
 

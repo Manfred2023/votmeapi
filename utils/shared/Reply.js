@@ -57,9 +57,10 @@ class Reply {
             req
         }));
     }
-    static destroy(res, status = 204) {
+    static destroy(res, message,status = 204) {
         return res.status(status).json({
             success: false,
+            message : message
         });
     }
 }

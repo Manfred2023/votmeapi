@@ -57,6 +57,7 @@ const CountryModel = sequelize.define('Country', {
     },
 }, {
     tableName: 'country',
+    // paranoid : true, // to make that a field is not truely deleted instead it create a deleatedAt timestamp
     timestamps: true,
 });
 
@@ -71,6 +72,7 @@ CountryModel.prototype.toJSON = function () {
     delete values.id;
     delete values.createdAt;
     delete values.updatedAt;
+    delete values.deletedAt;
     return values;
 };
 
