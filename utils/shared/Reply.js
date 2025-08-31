@@ -33,12 +33,18 @@ class Reply {
         }));
     }
 
-    static notFound(res, message = 'not found', status = 404) {
-        return res.status(status).json({
-            success: false,
-            message,
+    static notFound(res, message = 'not found', errorMessage, status = 404,req) {
+        return res.status(status).json(new ApiError({
+            title: message,
+            status: status,
+            detail: errorMessage,
+            req
+        }));
+        // return res.status(status).json({
+        //     success: false,
+        //     message,
 
-        });
+        // });
     }
 
 
