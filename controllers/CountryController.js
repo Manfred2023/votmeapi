@@ -23,8 +23,19 @@ exports.create = async (req, res) => {
 };
 
 exports.index = async (_req, res) => {
-    const countries = await svc.listCountries();
-    Reply.success(res, countries)
+    try {
+
+        const countries = await svc.listCountries();
+
+        if (countries === null) {
+            Reply.success(res, null, "No country found or saved", 404);
+        }
+        Reply.success(res, countries, "List of available countries");
+    } catch (err) {
+
+        console.log("An unespected error occur when retirving all counries", err);
+        Reply.errorServer(res, "An unexpected error orrcur", 500, "impossible to display all countries", req);
+    }
 
 };
 
