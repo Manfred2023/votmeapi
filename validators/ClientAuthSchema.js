@@ -28,6 +28,9 @@ const createClientIdSchema = Joi.object({
         "any.only": "Invalid code",
         "string.empty": "Code is required",
         "any.required": "Code is required"
+    }).required().messages({
+        "any.required": "Request body is required",
+        "object.base": "Request body must be an object"
     })
 })
 
@@ -72,6 +75,9 @@ const refreshClientIdSchema = Joi.object({
             "any.invalid": "User data do not match the refresh token data",
             "any.fail": "Invalid : Refresh token is expired or revoked",
             "any.required": "refresh roken is required"
+        }).required().messages({
+            "any.required": "Request body is required",
+            "object.base": "Request body must be an object"
         })
 })
 

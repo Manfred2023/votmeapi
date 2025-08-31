@@ -9,6 +9,11 @@ async function listCountries() {
     return Country.findAll({ order: [['name', 'ASC']] });
 }
 
+async function findCountry(countryName) {
+    const country = Country.findOne({ where: { name: countryName } });
+    return country;
+}
+
 async function updateCountry(id, payload) {
     const c = await Country.findByPk(id);
     if (!c) return null;
@@ -32,6 +37,7 @@ async function getByGuid(guid) {
 
 module.exports = {
     createCountry,
+    findCountry,
     listCountries,
     updateCountry,
     deleteCountry,

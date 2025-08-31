@@ -4,29 +4,34 @@ const Reply = require("../utils/shared/Reply");
 
 exports.create = async (req, res) => {
     try {
-        const {   name,iso2,iso3 ,dialCode } = req.body;
-        if (!name || !iso2 ||!iso3 || !dialCode) {
-            return Reply.fail(res, 'Bad request');
-        }
-        const country = await svc.createCountry(req.body);
-        Reply.success(res,country)
+        const reqData = req.validated;
 
-    } catch (e) {
-        Reply.fail(res,e.message,500)
+        const found = await svc.findCountry(reqData?.name);
+
+        if (found !== null)
+            return Reply.errorServer(res, "country already exist", 409, "The country data you provided has already been saved", req);
+
+
+        const savedCountry = await svc.createCountry(req.body);
+        Reply.success(res, savedCountry, "Country created successfully");
+
+    } catch (err) {
+        console.log("An unespected error occur when saving country", err);
+        Reply.errorServer(res, "error while saving the country", 500, "AN unespected error occur, try again later", req);
 
     }
 };
 
 exports.index = async (_req, res) => {
     const countries = await svc.listCountries();
-    Reply.success(res,countries)
+    Reply.success(res, countries)
 
 };
 
 exports.show = async (req, res) => {
     const country = await svc.getByGuid(req.params.guid);
     if (!country) Reply.notFound(res);
-    Reply.success(res,country)
+    Reply.success(res, country)
 
 };
 

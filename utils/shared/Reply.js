@@ -1,4 +1,5 @@
 const config = require("../../config/config");
+const ApiError = require("./errors");
 
 // shared/Reply.js
 class Reply {
@@ -6,26 +7,32 @@ class Reply {
     static success(res, data = {}, message = 'Opération réussie', status = 200) {
         return res.status(status).json({
             success: true,
-            data,
+            message: message,
+            data: data,
         });
     }
-    static bearer(res, accessToken, refreshToken, status = 200) {
+    static bearer(res, message, accessToken, refreshToken, status = 200) {
         return res.status(status).json({
             success: true,
-            access_token: accessToken,
-            token_type: "Bearer",
-            expires_in: config.jwt.access_expireIn_s,
-            refresh_token: refreshToken
+            message: message,
+            data: {
+                access_token: accessToken,
+                token_type: "Bearer",
+                expires_in: config.jwt.access_expireIn_s,
+                refresh_token: refreshToken
+            }
         });
     }
 
-    static errorServer(res, message = 'Une erreur est survenue', status = 500) {
-        return res.status(status).json({
-            success: false,
-            message,
-
-        });
+    static errorServer(res, message = 'Une erreur est survenue', status = 500, errorMessage, req) {
+        return res.status(status).json(new ApiError({
+            title: message,
+            status: status,
+            detail: errorMessage,
+            req
+        }));
     }
+
     static notFound(res, message = 'not found', status = 404) {
         return res.status(status).json({
             success: false,
@@ -35,12 +42,13 @@ class Reply {
     }
 
 
-    static fail(res, message = 'Requête invalide', status = 400) {
-        return res.status(status).json({
-            success: false,
-            message,
-
-        });
+    static fail(res, message = 'Requête invalide', errorMessage, status = 400, req) {
+        return res.status(status).json(new ApiError({
+            title: message,
+            status: status,
+            detail: errorMessage,
+            req
+        }));
     }
     static destroy(res, status = 204) {
         return res.status(status).json({

@@ -6,10 +6,10 @@ exports.createClientID = async (req, res) => {
     // console.log('validated data', req);
     const clientData = req.validated; // validated input
 
-    const accessToken = generateToken(clientData, config.jwt.access_expireIn_h);
+    const accessToken = generateToken(clientData, config.jwt.access_expireIn_h); 
     const refreshToken = generateToken(clientData, config.jwt.refresh_expireIn_d);
     if (accessToken && refreshToken)
-        Reply.bearer(res, accessToken, refreshToken);
+        Reply.bearer(res, "Token created successfuly", accessToken, refreshToken);
     else
         Reply.errorServer(res, "An error occur, try later");
 }
@@ -28,7 +28,7 @@ exports.refreshClientId = async (req, res) => {
     const accessToken = generateToken(clientData, config.jwt.access_expireIn_h);
     const refreshToken = generateToken(clientData, config.jwt.refresh_expireIn_d);
     if (accessToken && refreshToken)
-        Reply.bearer(res, accessToken, refreshToken);
+        Reply.bearer(res, "Access Token refreshed successfully", accessToken, refreshToken);
     else
         Reply.errorServer(res, "An error occur, try later");
 
