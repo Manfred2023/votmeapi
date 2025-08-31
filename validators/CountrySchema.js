@@ -29,6 +29,35 @@ const createCountrySchema = Joi.object({
     "object.base": "Request body must be an object"
 });
 
+
+const updateCountrySchema = Joi.object({
+    name: Joi.string().optional().messages({
+        "string.empty": "Name can't be empty",
+    }),
+    iso2: Joi.string().optional().messages({
+        "string.empty": "iso2 can't be empty",
+    }),
+    iso3: Joi.string().optional().messages({
+        "string.empty": "iso3 can't be empty",
+    }),
+    dialCode: Joi.number().integer() // optional: restrict to integers only
+        .min(0)    // optional: no negatives
+        .max(999)  // optional: max 3 digits
+        .optional()
+        .messages({
+            "number.base": "dialCode must be a valid number",
+            "number.integer": "dialCode must be an integer",
+            "number.max": "dialCode cannot be more than 3 digits",
+        }),
+
+}).required().messages({
+    "any.required": "Request body is required",
+    "object.base": "Request body must be an object"
+});
+
+
+
 module.exports = {
-    createCountrySchema
+    createCountrySchema,
+    updateCountrySchema
 }

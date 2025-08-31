@@ -10,12 +10,12 @@ async function listCountries() {
 }
 
 async function findCountry(countryName) {
-    const country = Country.findOne({ where: { name: countryName } });
+    const country = Country.findOne({ where: { countryName } });
     return country;
 }
 
-async function updateCountry(id, payload) {
-    const c = await Country.findByPk(id);
+async function updateCountry(guid, payload) {
+    const c = await Country.findOne({ where: { guid } });
     if (!c) return null;
     await c.update(payload);
     return c;
@@ -34,6 +34,34 @@ async function getByGuid(guid) {
     return country;
 }
 
+/**
+ * Verify each field of an object against the database.
+ * @param {Object} input - Object to validate (ex: req.body)
+ * @param {Object} models - Map of field->DB model (so we know where to check)
+ * @returns {Array} errors - Array of error objects { field, message }
+ */
+async function validateFieldsInDB(input) {
+    const errors = [];
+
+    for (const [field, value] of Object.entries(input)) {
+        if (value == null) continue; // skip null/undefined
+
+        // const Model = models[field];
+        // if (!Model) continue; // no DB mapping for this field
+
+        const exists = await Country.findOne({ where : {[field]: value }});
+        if (exists) {
+            errors.push({
+                field,
+                message: `${field} "${value}" already exists`,
+            });
+        }
+    }
+
+    return errors;
+}
+
+
 
 module.exports = {
     createCountry,
@@ -41,5 +69,6 @@ module.exports = {
     listCountries,
     updateCountry,
     deleteCountry,
-    getByGuid
+    getByGuid,
+    validateFieldsInDB
 };

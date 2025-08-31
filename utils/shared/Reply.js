@@ -33,7 +33,7 @@ class Reply {
         }));
     }
 
-    static notFound(res, message = 'not found', errorMessage, status = 404,req) {
+    static notFound(res, message = 'not found', errorMessage, status = 404, req) {
         return res.status(status).json(new ApiError({
             title: message,
             status: status,
@@ -48,11 +48,12 @@ class Reply {
     }
 
 
-    static fail(res, message = 'Requête invalide', errorMessage, status = 400, req) {
+    static fail(res, message = 'Requête invalide', errorMessage, status = 400, req, errors = null) {
         return res.status(status).json(new ApiError({
             title: message,
             status: status,
             detail: errorMessage,
+            errors: errors,
             req
         }));
     }

@@ -4,7 +4,6 @@ const Reply = require("../utils/shared/Reply");
 
 exports.create = async (req, res) => {
     try {
-        const reqData = req.validated;
 
         const found = await svc.findCountry(reqData?.name);
 
@@ -13,11 +12,11 @@ exports.create = async (req, res) => {
 
 
         const savedCountry = await svc.createCountry(req.body);
-        Reply.success(res, savedCountry, "Country created successfully");
+        return Reply.success(res, savedCountry, "Country created successfully");
 
     } catch (err) {
         // console.log("An unespected error occur when saving country", err);
-        Reply.errorServer(res, "error while saving the country", 500, "An unespected error occur, try again later", req);
+        return Reply.errorServer(res, "error while saving the country", 500, "An unespected error occur, try again later", req);
 
     }
 };
@@ -28,13 +27,13 @@ exports.index = async (_req, res) => {
         const countries = await svc.listCountries();
 
         if (countries === null) {
-            Reply.success(res, null, "No country found or saved", 404);
+            return Reply.success(res, null, "No country found or saved", 404);
         }
-        Reply.success(res, countries, "List of available countries");
+        return Reply.success(res, countries, "List of available countries");
     } catch (err) {
 
         // console.log("An unespected error occur when retirving all counries", err);
-        Reply.errorServer(res, "An unexpected error orrcur", 500, "impossible to display all countries", req);
+        return Reply.errorServer(res, "An unexpected error orrcur", 500, "impossible to display all countries", req);
     }
 
 };
@@ -43,24 +42,35 @@ exports.show = async (req, res) => {
     try {
         const country = await svc.getByGuid(req.params.guid);
         if (!country)
-            Reply.notFound(res, "Not found", "country doens't exist", 404, req);
+            return Reply.notFound(res, "Not found", "country doens't exist", 404, req);
         // Reply.success(res, country);
-        Reply.success(res, country, "Country data");
+        return Reply.success(res, country, "Country data");
 
     } catch (err) {
-        console.log("An unespected error occur when retirving all counries", err);
-        Reply.errorServer(res, "An unexpected error orrcur", 500, "impossible to retrieve the country data, try again later", req);
+        // console.log("An unespected error occur when retreiving country", err);
+        return Reply.errorServer(res, "An unexpected error orrcur", 500, "impossible to retrieve the country data, try again later", req);
     }
 
 };
 
 exports.update = async (req, res) => {
     try {
-        const updated = await svc.updateCountry(req.params.id, req.body);
-        if (!updated) return Reply.notFound(res);
-        res.json(updated);
-    } catch (e) {
-        res.status(400).json({ error: e.message });
+        const oldCountryData = req.validated;
+        countryGuid = req.params.guid;
+
+        const errors = await svc.validateFieldsInDB(oldCountryData);
+        if (errors.length > 0) {
+            return Reply.fail(res, "validation failed", "One or more fields are required", 422, req, errors)
+        }
+
+        const newCountry = await svc.updateCountry(countryGuid, oldCountryData);
+        if (!newCountry)
+            return Reply.notFound(res, "Not found", "country doens't exist", 404, req);
+
+        return Reply.success(res, newCountry, "Country data updated successfully");
+    } catch (err) {
+        // console.log("An unespected error occur when updating country", err);
+        return Reply.errorServer(res, "error while updating the country", 500, "An unespected error occur, try again later", req);
     }
 };
 
