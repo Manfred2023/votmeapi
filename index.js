@@ -1,6 +1,7 @@
 // index.js
 const express = require('express');
-const cors = require('cors');
+// const cors = require('cors');
+const corsMiddleware = require('./config/cors');
 const sequelize = require('./config/database');
 const rateLimiter = require('./middleware/rateLimiter');
 const routes = require("./routes/"); //central routes loader
@@ -10,7 +11,8 @@ const ApiError = require('./utils/shared/errors');
 
 const app = express();
 
-app.use(cors());
+// app.use(cors());
+app.use(corsMiddleware);
 app.use(express.json());
 app.use(rateLimiter);
 
@@ -44,19 +46,19 @@ app.use((err, req, res, next) => {
 app.disable('x-powered-by'); //Many developers disable it only for security through obscurity (so attackers can’t immediately know you’re running Express).
 
 
-    // --- Databae connexion and synchronisation ---
-    (async () => {
-        try {
-            await sequelize.authenticate();
-            console.log('✅ Connexion MySQL réussie !');
+// --- Databae connexion and synchronisation ---
+(async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('✅ Connexion MySQL réussie !');
 
-            await sequelize.sync({ alter: true });
-            console.log('✅ Tables synchronisées !');
+        await sequelize.sync({ alter: true });
+        console.log('✅ Tables synchronisées !');
 
-            const PORT = config.app.port;
-            app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+        const PORT = config.app.port;
+        app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
 
-        } catch (error) {
-            console.error('❌ Erreur lors du démarrage du serveur :', error.name, error.message);
-        }
-    })();
+    } catch (error) {
+        console.error('❌ Erreur lors du démarrage du serveur :', error.name, error.message);
+    }
+})();

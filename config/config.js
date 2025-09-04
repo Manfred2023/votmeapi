@@ -1,11 +1,18 @@
 require("dotenv").config(); // Load variables from .env
 
+const APP_MODE = 'dev'; // or  'prod'
+
+// Load the correct .env file based on NODE_ENV
+// const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
+// dotenv.config({ path: envFile }); or dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+
 const config = {
     app: {
         name: process.env.APP_NAME,
         version: process.env.APP_VERSION,
         port: process.env.PORT || 3000,
-        code: process.env.APP_CODE
+        code: process.env.APP_CODE,
+        mode : APP_MODE,
     },
     db: {
         host: process.env.DB_HOST,
@@ -22,6 +29,9 @@ const config = {
         refresh_expireIn_s: '604800' //in seconds
 
     },
+    cors: {
+        origins: process.env.ALLOWED_ORIGINS
+    }
 };
 
 module.exports = config;

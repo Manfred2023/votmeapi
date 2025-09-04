@@ -1,5 +1,6 @@
 // services/countryService.js
 const Country = require('../models/CountryModel');
+const { Op } = require('sequelize');
 
 async function createCountry(payload) {
     return Country.create(payload);
@@ -40,7 +41,7 @@ async function getByGuid(guid) {
  * @param {Object} models - Map of field->DB model (so we know where to check)
  * @returns {Array} errors - Array of error objects { field, message }
  */
-async function validateFieldsInDB(input) {
+async function validateFieldsInDB(input, guid = null) {
     const errors = [];
 
     for (const [field, value] of Object.entries(input)) {
@@ -49,7 +50,15 @@ async function validateFieldsInDB(input) {
         // const Model = models[field];
         // if (!Model) continue; // no DB mapping for this field
 
-        const exists = await Country.findOne({ where : {[field]: value }});
+        const whereClause = { [field]: value };
+
+        //if guid is provided exclude it (in the request)
+        if (guid !== null) {
+            whereClause.guid = { [Op.ne]: guid };
+        }
+
+        // const exists = await Country.findOne({ where : {[field]: value }});
+        const exists = await Country.findOne({ where: whereClause });
         if (exists) {
             errors.push({
                 field,
