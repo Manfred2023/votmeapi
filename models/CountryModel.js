@@ -2,6 +2,7 @@
 const { DataTypes } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
 const sequelize = require('../config/database');
+const { lowercaseFields } = require('../utils/shared/formatters');
 
 const CountryModel = sequelize.define('Country', {
     id: {
@@ -59,6 +60,9 @@ const CountryModel = sequelize.define('Country', {
     tableName: 'country',
     // paranoid : true, // to make that a field is not truely deleted instead it create a deleatedAt timestamp
     timestamps: true,
+    hooks: {
+        beforeSave: (CountryModel) => lowercaseFields(CountryModel, ["name", "iso2", "iso3"]),  //This hook is more general and is invoked whenever an instance of a model is being saved to the database, regardless of whether it's a new instance (creation) or an existing instance being updated. Therefore, beforeSave will run during both create and update operations.
+    },
 });
 
 CountryModel.beforeCreate((country) => {
