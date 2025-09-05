@@ -1,5 +1,6 @@
 // controllers/countryController.js
 const svc = require('../services/CountryServices');
+// const { removeFields } = require('../utils/shared/formatters');
 const Reply = require("../utils/shared/Reply");
 
 exports.create = async (req, res) => {
@@ -11,13 +12,13 @@ exports.create = async (req, res) => {
         //     return Reply.errorServer(res, "country already exist", 409, "The country data you provided has already been saved", req);
 
         const errors = await svc.validateFieldsInDB(reqData);
-        console.log(reqData);
+        // console.log(reqData);
         if (errors.length > 0) {
             return Reply.fail(res, "country data already exist", "One or more fields you provided already exist", 409, req, errors);
         }
 
 
-        const savedCountry = await svc.createCountry(req.body);
+        const savedCountry = await svc.createCountry(reqData);
         return Reply.success(res, savedCountry, "Country created successfully");
 
     } catch (err) {
@@ -64,7 +65,7 @@ exports.update = async (req, res) => {
         const oldCountryData = req.validated;
         countryGuid = req.params.guid;
 
-        const errors = await svc.validateFieldsInDB(oldCountryData,countryGuid);
+        const errors = await svc.validateFieldsInDB(oldCountryData, countryGuid);
         if (errors.length > 0) {
             return Reply.fail(res, "validation failed", "One or more fields are required", 422, req, errors)
         }
@@ -75,7 +76,7 @@ exports.update = async (req, res) => {
 
         return Reply.success(res, newCountry, "Country data updated successfully");
     } catch (err) {
-        console.log("An unespected error occur when updating country", err);
+        // console.log("An unespected error occur when updating country", err);
         return Reply.errorServer(res, "error while updating the country", 500, "An unespected error occur, try again later", req);
     }
 };
