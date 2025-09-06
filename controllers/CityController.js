@@ -72,3 +72,21 @@ exports.update = async (req, res) => {
         return Reply.errorServer(res, "error while updating the city", 500, "An unespected error occured");
     }
 }
+
+exports.destroy = async (req, res) => {
+    try {
+        const cityGuid = req.params.guid;
+        const findGuid = await svc.findCity(cityGuid, false);
+        if (!findGuid)
+            return Reply.notFound(res, "Not found", "city doens't exist", 404, req);
+
+        const deleted = svc.deleteCity(cityGuid);
+        if (!deleted)
+            throw new Error("Error while updatting the contact");
+
+        return Reply.destroy(res, "City deleted successfully");
+
+    } catch (err) {
+        return Reply.errorServer(res, "error while deleting the city", 500, "An unespected error occur, try again later", req);
+    }
+}

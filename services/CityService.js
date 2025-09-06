@@ -39,6 +39,15 @@ async function updateCity(guid, payload) {
 
 }
 
+async function deleteCity(guid) {
+    const deleted = await City.destroy({
+        where: { guid }
+    });
+    if (!deleted)
+        return 0;
+    return 1; //true
+}
+
 
 /**
  * verify that the data we want to create or update is unique
@@ -51,6 +60,7 @@ module.exports = {
     createCity,
     findCity,
     updateCity,
+    deleteCity,
     validateFieldsInDB,
     getCountry
 }
