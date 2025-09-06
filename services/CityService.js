@@ -14,15 +14,15 @@ async function createCity(city) {
     return fullCityData;
 }
 
-async function findCity(guid) {
+async function findCity(guid, withCountry = true) {
     const city = City.findOne({
         where: { guid },
-        include: [
+        include: withCountry ? [
             {
                 model: Country,
                 as: "country", // must match the alias defined in associations
             },
-        ],
+        ] : [],
     })
     return city;
 }
