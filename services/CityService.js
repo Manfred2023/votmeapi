@@ -27,6 +27,19 @@ async function findCity(guid, withCountry = true) {
     return city;
 }
 
+async function getCountry(countryGuid) {
+    return await countryService.getByGuid(countryGuid);
+}
+
+async function updateCity(guid, payload) {
+
+    const [updated] = await City.update(payload, { where: { guid } });
+    if (!updated) return null;
+    return await findCity(guid);
+
+}
+
+
 /**
  * verify that the data we want to create or update is unique
  */
@@ -37,5 +50,7 @@ async function validateFieldsInDB(input, guid = null) {
 module.exports = {
     createCity,
     findCity,
-    validateFieldsInDB
+    updateCity,
+    validateFieldsInDB,
+    getCountry
 }

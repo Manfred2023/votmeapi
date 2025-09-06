@@ -14,6 +14,20 @@ const createCitySchema = Joi.object({
     "object.base": "Request body must be an object"
 });
 
+const updateCitySchema = Joi.object({
+    name: Joi.string().optional().messages({
+        "string.empty": "City Name can't be null",
+    }),
+    countryId: Joi.string().optional().messages({
+        "string.empty": "Country identifier can't be null",
+    }),
+}).min(1).required().messages({
+    "any.required": "Request body is required",
+    "object.base": "Request body must be an object",
+    "object.min": "At least one field is required",
+});
+
 module.exports = {
-    createCitySchema
+    createCitySchema,
+    updateCitySchema
 }

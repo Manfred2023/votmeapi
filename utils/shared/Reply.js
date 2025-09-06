@@ -33,11 +33,12 @@ class Reply {
         }));
     }
 
-    static notFound(res, message = 'not found', errorMessage, status = 404, req) {
+    static notFound(res, message = 'not found', errorMessage, status = 404, req, errors = null) {
         return res.status(status).json(new ApiError({
             title: message,
             status: status,
             detail: errorMessage,
+            errors: errors,
             req
         }));
         // return res.status(status).json({
@@ -57,10 +58,10 @@ class Reply {
             req
         }));
     }
-    static destroy(res, message,status = 204) {
+    static destroy(res, message, status = 204) {
         return res.status(status).json({
             success: false,
-            message : message
+            message: message
         });
     }
 }
