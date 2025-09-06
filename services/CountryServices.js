@@ -1,17 +1,29 @@
 // services/countryService.js
-const { Country } = require('../models');
+const { Country, City } = require('../models');
 const { validateFieldsInDb } = require('../utils/shared/formatters');
 
 async function createCountry(payload) {
     return Country.create(payload);
 }
 
-async function listCountries() {
-    return Country.findAll({ order: [['name', 'ASC']] });
+async function listCountries(withCity = false) {
+    return Country.findAll({
+        order: [['name', 'ASC']],
+        include: withCity ? [{
+            model: City,
+            as: "cities"
+        }] : [],
+    });
 }
 
-async function findCountry(countryName) {
-    const country = Country.findOne({ where: { countryName } });
+async function findCountry(countryName, withCity = false) {
+    const country = Country.findOne({
+        where: { countryName },
+        include: withCity ? [{
+            model: City,
+            as: "cities" // must match the alias defined in associations
+        }] : [],
+    });
     return country;
 }
 
@@ -29,8 +41,14 @@ async function deleteCountry(guid) {
     return 1;
 }
 
-async function getByGuid(guid) {
-    const country = await Country.findOne({ where: { guid } });
+async function getByGuid(guid, withCity = false) {
+    const country = await Country.findOne({
+        where: { guid },
+        include: withCity ? [{
+            model: City,
+            as: "cities" // must match the alias defined in associations
+        }] : [],
+    });
     if (!country) return 0;
     return country;
 }

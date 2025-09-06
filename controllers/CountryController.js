@@ -30,8 +30,8 @@ exports.create = async (req, res) => {
 
 exports.index = async (req, res) => {
     try {
-
-        const countries = await svc.listCountries();
+        const withCity = req.query.withCity === "true" ? true : false;
+        const countries = await svc.listCountries(withCity);
 
         if (countries === null) {
             return Reply.success(res, null, "No country found or saved", 404);
@@ -47,7 +47,9 @@ exports.index = async (req, res) => {
 
 exports.show = async (req, res) => {
     try {
-        const country = await svc.getByGuid(req.params.guid);
+        const withCity = req.query.withCity === "true" ? true : false;
+        console.log("with city", req.query.withCity);
+        const country = await svc.getByGuid(req.params.guid, withCity);
         if (!country)
             return Reply.notFound(res, "Not found", "country doens't exist", 404, req);
         // Reply.success(res, country);
