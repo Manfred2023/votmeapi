@@ -1,11 +1,13 @@
 <?php
 /*
- *  BuildTrackApi
+ *   VotMe Api
+ *   Copyright (c) 2025 FredCode Sarl. All rights reserved.
  *
- *  Created by Manfred MOUKATE on 1/7/25, 10:15 AM,
- *  Email moukatemanfred@gmail.com
- *  Copyright (c) 2025. All rights reserved.
- *  Last modified 1/7/25, 10:15 AM
+ *   Created by: Manfred MOUKATE
+ *   Contact: hello@votme.cm +237 699 888 709
+ *   First created: 26/09/2025, 20:08
+ *   Last modified: 26/09/2025, 20:08
+ *
  */
 
 
@@ -19,7 +21,7 @@ class DBConn
     static public function _conn(): void
     {
         try {
-            R::setup('mysql:host=localhost:3306;dbname=nege5774_votme',
+            R::setup('mysql:host=localhost:3306;dbname=nege5774_sandbox_votme',
                 'nege5774_manfred', 'Manfred500.');
 
         } catch (Exception $exception) {

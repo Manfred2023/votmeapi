@@ -1,18 +1,20 @@
 <?php
 /*
- *  BuildTrackApi
+ *   VotMe Api
+ *   Copyright (c) 2025 FredCode Sarl. All rights reserved.
  *
- *  Created by Manfred MOUKATE on 1/7/25, 10:15 AM,
- *  Email moukatemanfred@gmail.com
- *  Copyright (c) 2025. All rights reserved.
- *  Last modified 1/7/25, 10:15 AM
+ *   Created by: Manfred MOUKATE
+ *   Contact: hello@votme.cm +237 699 888 709
+ *   First created: 26/09/2025, 20:08
+ *   Last modified: 26/09/2025, 20:08
+ *
  */
 
 
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
 
-if (!@require realpath(dirname(__DIR__, 3)) . '/conf.php') ;
+if (!@require realpath(dirname(__DIR__, 3)) . '/conf.php'){
+    return null;
+}
 http_response_code(403);
 
 require_once dirname(__DIR__, 3) . '/lib/utilities/Auth.php';

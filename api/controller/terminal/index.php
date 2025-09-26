@@ -31,7 +31,7 @@ try {
 
     $JwtController = new Jwt(ConstantApp::APP_IDENTIFIER, $data[APP]);
 
-    Reply::_successBearer($JwtController->encode($data[IDNTFR]), type: 'reference');
+    Reply::_successBearer($JwtController->encode(), type: 'bearer');
 
 } catch (Exception $exception) {
     Reply::_exception($exception);

@@ -2,10 +2,10 @@
 require dirname(__DIR__, 3) . '/conf.php';
 require_once dirname(__DIR__, 3) . '/lib/utilities/Auth.php';
 
-if (!validateBearerToken()) {
+/*if (!validateBearerToken()) {
     Reply::_error("Invalid or missing Bearer token", code: 401);
     exit();
-}
+}*/
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     Reply::_error("Only POST method is allowed", code: 405);
@@ -16,7 +16,6 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 try {
-    // On vérifie la présence de l'image
     if (!isset($_FILES['image'])) {
         Reply::_error("No image file received", code: 400);
         exit();
@@ -27,12 +26,12 @@ try {
     $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
 
-    $maxSize = 2 * 1024 * 1024; // 2 Mo
+    $maxSize = 10 * 1024 * 1024; // 10 Mo
     if ($file['size'] > $maxSize) {
         Reply::_error("bad_size", code: 413);
         exit();
-    } 
-
+    }
+    
     if (!in_array($extension, $allowed)) {
         Reply::_error("Extension non autorisée", code: 415);
         exit();
@@ -42,7 +41,7 @@ try {
     $fileName = uniqid('img_') . '.' . $extension;
     $filePath = $uploadDir . $fileName;
 
-    if (!file_exists($uploadDir)) {
+        if (!file_exists($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
 

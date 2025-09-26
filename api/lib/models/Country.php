@@ -8,13 +8,14 @@
  *  Last modified 1/7/25, 10:15 AM
  */
 
+use Ramsey\Uuid\Uuid;
 use RedBeanPHP\OODBBean;
-
+require_once __DIR__ . '/../../../vendor/autoload.php';
 class Country extends DBA
 {
     protected const   TABLE = 'country';
     private ?int $id;
-    private ?int $token;
+    private ?string $token;
     private string $namefr;
     private string $nameen;
     private string $alpha2;
@@ -23,14 +24,14 @@ class Country extends DBA
 
     /**
      * @param int|null $id
-     * @param int|null $token
+     * @param string|null $token
      * @param string $namefr
      * @param string $nameen
      * @param string $alpha2
      * @param string $alpha3
      * @param string $dialcode
      */
-    public function __construct(?int $id, ?int $token, string $namefr, string $nameen, string $alpha2, string $alpha3, string $dialcode)
+    public function __construct(?int $id, ?string $token, string $namefr, string $nameen, string $alpha2, string $alpha3, string $dialcode)
     {
         $this->id = $id;
         $this->token = $token;
@@ -104,12 +105,12 @@ class Country extends DBA
         ];
     }
 
-    public function getToken(): ?int
+    public function getToken(): ?string
     {
         return $this->token;
     }
 
-    public function setToken(?int $token): void
+    public function setToken(?string $token): void
     {
         $this->token = $token;
     }
@@ -117,7 +118,7 @@ class Country extends DBA
     /**
      * @return Country|null
      */
-    public function save()
+    public function save(): ?Country
     {
         try {
             $this->validate();
@@ -125,6 +126,7 @@ class Country extends DBA
         } catch (Exception $e) {
             Reply::_error($e->getMessage());
         }
+        return null;
     }
 
     /**
@@ -156,7 +158,7 @@ class Country extends DBA
         if (!$bean instanceof OODBBean)
             return null;
         if (!$update) {
-            $bean->{self::TOKEN} = (int)self::shortToken(self::TABLE);
+            $bean->{self::TOKEN} =  self::uuidToken();
         }
         $bean->{NAMEFR} = QString::_set($country->getNamefr());
         $bean->{NAMEEN} = QString::_set($country->getNameen());
@@ -190,6 +192,14 @@ class Country extends DBA
         $nextToken = ($lastToken) ? intval($lastToken) + 1 : 100001;
 
         return $nextToken;
+    }
+    static protected function uuidToken(): string
+    {
+        try {
+            return Uuid::uuid4()->toString();
+        } catch (\Exception $e) {
+            throw new \RuntimeException("Erreur lors de la génération du token UUID : " . $e->getMessage());
+        }
     }
 
     public function getNamefr(): string

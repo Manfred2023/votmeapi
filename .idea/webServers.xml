@@ -9,6 +9,13 @@
           </advancedOptions>
         </fileTransfer>
       </webServer>
+      <webServer id="f06711d1-0fa8-49dd-8250-d733545a83e3" name="Sandbox" url="http://ftp.nege5774.odns.fr">
+        <fileTransfer host="ftp.nege5774.odns.fr" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>

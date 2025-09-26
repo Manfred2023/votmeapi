@@ -43,7 +43,7 @@ try {
     define('_ROOTVEN', dirname(__FILE__) . DIRECTORY_SEPARATOR);
 
     # COMMON DIRECTORIES
-    define('_VDR', 'vendors');
+    define('_VDRS', 'vendors');
     define('AUTO', 'autoload');
     define('_LIB', 'lib');
     define('_MODEL', 'models');
@@ -53,7 +53,7 @@ try {
     define('_ENV', _ROOT . 'env' . _PHP);
 
     # ORM SET
-    define('_ORM', _ROOT . _VDR . _SEP . 'rb' . _PHP);
+    define('_ORM', _ROOT . _VDRS . _SEP . 'rb' . _PHP);
     if (!(file_exists(_ORM) || is_readable(_ORM)) || !@require(_ORM))
         throw new Exception ("unabl3 to reach to datda mapping: '" . _ORM . "'");
 

@@ -1,11 +1,13 @@
 <?php
 /*
- *  BuildTrackApi
+ *   VotMe Api
+ *   Copyright (c) 2025 FredCode Sarl. All rights reserved.
  *
- *  Created by Manfred MOUKATE on 1/7/25, 10:15 AM,
- *  Email moukatemanfred@gmail.com
- *  Copyright (c) 2025. All rights reserved.
- *  Last modified 1/7/25, 10:15 AM
+ *   Created by: Manfred MOUKATE
+ *   Contact: hello@votme.cm +237 699 888 709
+ *   First created: 26/09/2025, 19:56
+ *   Last modified: 26/09/2025, 19:56
+ *
  */
 
 class Jwt
@@ -21,16 +23,22 @@ class Jwt
 
     // Encode base64url
 
-    public function encode(string $clientId, int $validityInSeconds = 86400): string
+    /**
+     * @throws JsonException
+     */
+    public function encode(int $validityInSeconds = 86400): string
     {
         $header = $this->createHeader();
-        $payload = $this->createPayload($clientId, $validityInSeconds);
+        $payload = $this->createPayload($validityInSeconds);
         $signature = $this->createSignature($header, $payload);
 
         return "{$header}.{$payload}.{$signature}";
     }
 
-    // Decode base64url
+    /**
+     * @return string
+     * @throws JsonException
+     */
 
     private function createHeader(): string
     {
@@ -50,7 +58,11 @@ class Jwt
         return rtrim(strtr(base64_encode($text), '+/', '-_'), '=');
     }
 
-    // Crée le payload du JWT
+    /**
+     * @param int $validityInSeconds
+     * @return string
+     * @throws JsonException
+     */
 
     private function createPayload(int $validityInSeconds): string
     {
