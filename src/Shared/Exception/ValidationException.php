@@ -1,0 +1,15 @@
+<?php
+/*
+ *   VotMe Api
+ *   Copyright (c) 2025 FredCode Sarl. All rights reserved.
+ *
+ *   Created by: Manfred MOUKATE
+ *   Contact: hello@votme.cm +237 699 888 709
+ *   First created: 01/10/2025, 17:41
+ *   Last modified: 01/10/2025, 17:41
+ *
+ */
+
+class ValidationException extends Exception {}
+class NotFoundException extends Exception {}
+class UnauthorizedException extends Exception {}
