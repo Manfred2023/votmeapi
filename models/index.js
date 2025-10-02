@@ -2,6 +2,7 @@
 
 const Country = require('./CountryModel');
 const City = require('./CityModel');
+const Contact = require('./ContactModel')
 
 //Define relationships
 // Country 1 --- N City
@@ -12,7 +13,12 @@ City.belongsTo(Country, { foreignKey: "countryId", as: "country" });
 // User.hasMany(Product, { foreignKey: "userId", as: "products" });
 // Product.belongsTo(User, { foreignKey: "userId", as: "owner" });
 
+// City 1 --- N Contact
+City.hasMany(Contact, { foreignKey: "cityId", as: "contacts" });
+Contact.belongsTo(City, { foreignKey: "cityId", as: "city" });
+
 module.exports = {
     Country,
-    City
+    City,
+    Contact
 }
